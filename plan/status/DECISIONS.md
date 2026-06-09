@@ -53,3 +53,11 @@ Use this file for technical or process decisions that future agents should not h
 - Context: User requires centralized hyperparameters for tuning.
 - Decision: Store experiment values in YAML and load them into typed Python config objects.
 - Consequences: Hyperparameter tuning should happen via config files/overrides, not source edits.
+
+## DEC-006: Use A Lightweight Custom Training Loop For The Baseline
+
+- Date: 2026-06-09
+- Status: Accepted
+- Context: The target runtime mentions Transformers 5.0.0, which may differ from the 4.x Trainer examples most snippets rely on.
+- Decision: Implement Design 1 training/evaluation with a small PyTorch loop and keep Hugging Face use focused on tokenizer/model loading.
+- Consequences: The baseline path is less sensitive to Trainer API drift, and offline smoke tests can monkeypatch the model/tokenizer more easily.

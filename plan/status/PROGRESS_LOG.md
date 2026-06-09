@@ -84,3 +84,69 @@ Append a new entry at the top or bottom of this file at the end of every work se
 ### Next Recommended Action
 
 - Start Phase 1 from `plan/guides/IMPLEMENTATION_BACKLOG.md`.
+
+## 2026-06-09 - Codex Baseline Implementation
+
+### Summary
+
+- Implemented the full Design 1 baseline code path: config loader, data pipeline, model registry, training/evaluation/prediction CLI, docs, tests, and Kaggle notebook.
+- Kept `moe` and `engram_moe` as explicit future extension points without forcing a later refactor.
+- Completed syntax/help/notebook validation and started dependency installation for full runtime verification.
+
+### Files Changed
+
+- `.gitignore`: ignored virtualenv, caches, and output artifacts.
+- `pyproject.toml`: added package metadata and dependencies.
+- `configs/*`: centralized defaults, Kaggle overrides, and model-specific configs.
+- `src/vnnli_engram_moe/*`: added config, data, metrics, model registry, training loop, and CLI code.
+- `scripts/*`: added thin train/evaluate/predict entrypoints.
+- `tests/*`: added fixtures, unit tests, and an offline smoke-train path using dummy components.
+- `README.md`: added project quickstart and usage docs.
+- `docs/*`: added project, data, Kaggle, and experiments documentation.
+- `notebooks/kaggle_wrapup.ipynb`: added uploadable Kaggle clone/setup/train notebook.
+- `plan/STATE.md`: updated implementation and verification status.
+- `plan/status/DECISIONS.md`: recorded the custom-training-loop decision.
+- `plan/status/BLOCKERS.md`: added the local dependency/runtime blocker.
+
+### Verification
+
+- `python3 scripts/train.py --help`: passed.
+- `python3 scripts/evaluate.py --help`: passed.
+- `python3 scripts/predict.py --help`: passed.
+- `python3 -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `python3 -m compileall src scripts tests`: passed.
+- `python3 -m py_compile src/vnnli_engram_moe/config.py src/vnnli_engram_moe/cli.py src/vnnli_engram_moe/models/ffn.py src/vnnli_engram_moe/models/moe.py src/vnnli_engram_moe/models/engram_moe.py src/vnnli_engram_moe/models/registry.py src/vnnli_engram_moe/training/trainer.py`: passed.
+- `python3 -m pytest`: blocked because `pytest` is not installed in the base environment.
+- `python3 -m pip install uv -t /tmp/uvpkg`: failed in the sandbox because DNS/network access was unavailable.
+- `python3 -m venv .venv`: passed.
+- `.venv/bin/pip install uv pytest numpy pandas pyyaml tqdm torch transformers datasets`: started after approval; full runtime verification still depends on completion.
+
+### Next Recommended Action
+
+- Finish `.venv` dependency installation, then run pytest and a 1-step smoke train against `tests/fixtures/sample_vianli.jsonl`.
+
+## 2026-06-09 - Codex GPU Verification
+
+### Summary
+
+- Replaced the temporary CPU-only torch install with `torch==2.10.0+cu128` inside `.venv`.
+- Installed the remaining project dependencies, ran the full pytest suite, and completed a real 1-step CUDA smoke train from the CLI.
+- Prepared the repo for clean logical commits.
+
+### Files Changed
+
+- `plan/STATE.md`: marked verification complete and recorded GPU/runtime checks.
+- `plan/status/BLOCKERS.md`: resolved the local dependency/runtime blocker and updated the risk note.
+- `plan/status/PROGRESS_LOG.md`: appended this verification entry.
+
+### Verification
+
+- `.venv/bin/pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.10.0+cu128`: passed.
+- `.venv/bin/python -c "import torch; ..."`: passed; CUDA available on RTX 5050 Laptop GPU.
+- `.venv/bin/pip install pytest numpy pandas pyyaml tqdm transformers datasets ipykernel nbformat ruff -e .`: passed.
+- `.venv/bin/python -m pytest`: passed; `13 passed`.
+- `.venv/bin/python scripts/train.py --config configs/default.yaml --model-config configs/models/mbert_cased.yaml --train-file tests/fixtures/sample_vianli.jsonl --validation-file tests/fixtures/sample_vianli.jsonl --test-file tests/fixtures/sample_vianli.jsonl --override model.checkpoint='\"hf-internal-testing/tiny-random-bert\"' --epochs 1 --max-steps 1 --batch-size 2 --run-name smoke_cli`: passed on CUDA.
+
+### Next Recommended Action
+
+- Create and review the separated commits for scaffold, core baseline code, docs/tests/notebook, and mutable handoff state.
