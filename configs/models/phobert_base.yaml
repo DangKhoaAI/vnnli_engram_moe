@@ -1,0 +1,8 @@
+model:
+  model_key: phobert_base
+  checkpoint: vinai/phobert-base
+  architecture: ffn
+  use_fast_tokenizer: false
+  requires_word_segmentation: true
+  allow_noop_word_segmenter: true
+

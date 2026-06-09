@@ -1,0 +1,64 @@
+project:
+  name: vnnli-engram-moe
+  seed: 42
+  output_dir: outputs/runs
+  run_name: null
+
+data:
+  train_file: data/ViANLI/train.jsonl
+  validation_file: data/ViANLI/dev.jsonl
+  test_file: data/ViANLI/test.jsonl
+  text_columns:
+    premise: premise
+    hypothesis: hypothesis
+  label_column: label
+  uid_column: uid
+  delimiter: ","
+
+model:
+  model_key: mbert_cased
+  checkpoint: bert-base-multilingual-cased
+  architecture: ffn
+  num_labels: 3
+  use_fast_tokenizer: true
+  requires_word_segmentation: false
+  allow_noop_word_segmenter: true
+
+training:
+  max_length: 256
+  learning_rate: 1.0e-5
+  eval_frequency: 400
+  per_device_train_batch_size: 16
+  per_device_eval_batch_size: 16
+  weight_decay: 0.0
+  adam_epsilon: 1.0e-8
+  dropout: 0.4
+  num_train_epochs: 7
+  warmup_ratio: 0.0
+  gradient_accumulation_steps: 1
+  fp16: false
+  bf16: false
+  logging_steps: 50
+  save_steps: 400
+  max_steps: null
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: macro_f1
+  device: auto
+  num_workers: 0
+
+moe:
+  enabled: false
+  num_experts: 4
+  top_k: 2
+  expert_hidden_size: null
+  router_temperature: 1.0
+  load_balance_loss_weight: 0.01
+
+engram:
+  enabled: false
+  memory_size: 0
+  retrieval_top_k: 0
+  update_policy: none
+  fusion: none
+

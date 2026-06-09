@@ -1,0 +1,7 @@
+project:
+  output_dir: /kaggle/working/outputs/runs
+
+training:
+  fp16: true
+  num_workers: 2
+
