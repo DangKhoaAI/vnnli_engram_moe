@@ -1,0 +1,5 @@
+{"uid":"uit_Adver_365_3_11_02","premise":"Tọa đàm do Tổng cục Du lịch phối hợp với báo điện tử VnExpress tổ chức ngày 3/4 tại FLC Sầm Sơn, Thanh Hóa.","hypothesis":"Đầu tháng 4 có một buổi gặp mặt trao đổi của Tổng cục Du lịch.","label":"entailment"}
+{"uid":"uit_Adver_001","premise":"Trận đấu bị hoãn do mưa lớn kéo dài suốt buổi chiều.","hypothesis":"Trận đấu vẫn diễn ra đúng lịch trong thời tiết nắng đẹp.","label":"contradiction"}
+{"uid":"uit_Adver_002","premise":"Công ty thông báo sẽ mở thêm văn phòng tại Đà Nẵng vào quý sau.","hypothesis":"Công ty đang tuyển thực tập sinh cho bộ phận pháp chế.","label":"neutral"}
+{"uid":"uit_Adver_003","premise":"Giá xăng giảm nhẹ sau kỳ điều chỉnh mới nhất.","hypothesis":"Giá xăng vừa được điều chỉnh.","label":"entailment"}
+

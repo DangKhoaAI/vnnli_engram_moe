@@ -1,0 +1,5 @@
+uid,premise,hypothesis,label
+uit_Adver_365_3_11_02,"Tọa đàm do Tổng cục Du lịch phối hợp với báo điện tử VnExpress tổ chức ngày 3/4 tại FLC Sầm Sơn, Thanh Hóa.","Đầu tháng 4 có một buổi gặp mặt trao đổi của Tổng cục Du lịch.",entailment
+uit_Adver_001,"Trận đấu bị hoãn do mưa lớn kéo dài suốt buổi chiều.","Trận đấu vẫn diễn ra đúng lịch trong thời tiết nắng đẹp.",contradiction
+uit_Adver_002,"Công ty thông báo sẽ mở thêm văn phòng tại Đà Nẵng vào quý sau.","Công ty đang tuyển thực tập sinh cho bộ phận pháp chế.",neutral
+
