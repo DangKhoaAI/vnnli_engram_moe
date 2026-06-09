@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +53,43 @@ def read_records(path: str | Path, data_config: DataConfig) -> list[dict[str, An
     raise ValueError(f"Unsupported dataset format for {source}. Use JSONL, CSV, or Parquet.")
 
 
+def _resolve_hf_split_name(split_name: str, available_splits: set[str]) -> str:
+    candidates = {
+        "train": ["train"],
+        "validation": ["validation", "dev", "valid"],
+        "test": ["test"],
+    }.get(split_name, [split_name])
+    for candidate in candidates:
+        if candidate in available_splits:
+            return candidate
+    raise ValueError(
+        f"Hugging Face dataset does not provide a usable '{split_name}' split. "
+        f"Available splits: {', '.join(sorted(available_splits))}."
+    )
+
+
+@lru_cache(maxsize=8)
+def _load_hf_dataset_dict(dataset_name: str, dataset_config: str | None):
+    from datasets import load_dataset
+
+    return load_dataset(dataset_name, name=dataset_config)
+
+
+def read_hf_records(split_name: str, data_config: DataConfig) -> list[dict[str, Any]]:
+    if not data_config.hf_dataset:
+        raise ValueError("data.hf_dataset must be set to load records from Hugging Face.")
+    try:
+        import datasets  # noqa: F401
+    except ImportError as error:
+        raise RuntimeError(
+            "Loading datasets from Hugging Face requires the 'datasets' package."
+        ) from error
+
+    dataset_dict = _load_hf_dataset_dict(data_config.hf_dataset, data_config.hf_dataset_config)
+    resolved_split = _resolve_hf_split_name(split_name, set(dataset_dict.keys()))
+    return list(dataset_dict[resolved_split])
+
+
 def validate_records(records: list[dict[str, Any]], data_config: DataConfig) -> None:
     required_columns = {
         data_config.uid_column,
@@ -65,4 +103,3 @@ def validate_records(records: list[dict[str, Any]], data_config: DataConfig) -> 
     if missing:
         missing_text = ", ".join(sorted(missing))
         raise ValueError(f"Dataset is missing required columns: {missing_text}")
-

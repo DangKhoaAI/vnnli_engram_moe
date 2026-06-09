@@ -150,3 +150,30 @@ Append a new entry at the top or bottom of this file at the end of every work se
 ### Next Recommended Action
 
 - Create and review the separated commits for scaffold, core baseline code, docs/tests/notebook, and mutable handoff state.
+
+## 2026-06-09 - Codex Hugging Face Dataset Support
+
+### Summary
+
+- Added direct Hugging Face dataset loading so `scripts/train.py` can accept `--hf-dataset uitnlp/ViANLI`.
+- Kept the existing file-based flow intact, while preferring HF splits when `data.hf_dataset` is set.
+- Verified the new path with unit tests and a CUDA smoke train against `uitnlp/ViANLI`.
+
+### Files Changed
+
+- `src/vnnli_engram_moe/config.py`: added optional Hugging Face dataset fields to the data config.
+- `src/vnnli_engram_moe/data/io.py`: added HF split loading with cached dataset reuse.
+- `src/vnnli_engram_moe/data/dataset.py`: taught split loading to use HF data directly.
+- `src/vnnli_engram_moe/cli.py`: added `--hf-dataset` and `--hf-dataset-config`.
+- `tests/test_dataset.py`: added tests for HF split loading and split resolution.
+- `README.md`: documented direct HF dataset training.
+- `docs/KAGGLE.md`: documented HF dataset usage in Kaggle.
+
+### Verification
+
+- `.venv/bin/python -m pytest`: passed; `15 passed`.
+- `.venv/bin/python scripts/train.py --config configs/default.yaml --model-config configs/models/mbert_cased.yaml --hf-dataset uitnlp/ViANLI --override model.checkpoint='\"hf-internal-testing/tiny-random-bert\"' --epochs 1 --max-steps 1 --batch-size 2 --run-name smoke_hf_dataset_cached`: passed on CUDA.
+
+### Next Recommended Action
+
+- If desired, mirror the same `--hf-dataset` option into the Kaggle notebook cells so the notebook no longer needs any local dataset export step.

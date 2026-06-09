@@ -6,7 +6,9 @@ Use [notebooks/kaggle_wrapup.ipynb](/home/khoa/KHOA/FPTStudy/Semester7/DAT301m/P
 
 1. Upload the notebook to Kaggle.
 2. Set `REPO_URL` if needed.
-3. Set `DATA_DIR` to the folder containing `train.jsonl`, `dev.jsonl`, and `test.jsonl`.
+3. Either:
+   - set `DATA_DIR` to the folder containing `train.jsonl`, `dev.jsonl`, and `test.jsonl`, or
+   - use `--hf-dataset uitnlp/ViANLI` in the train command to load directly from Hugging Face.
 4. Choose `MODEL_CONFIG`.
 5. Toggle `RUN_FULL_TRAIN`.
 6. Run the notebook top-to-bottom.
@@ -30,4 +32,3 @@ The notebook writes artifacts under:
 - If `uv` is missing, the notebook installs it first.
 - If cloning into `/kaggle/working` fails, check internet settings in the Kaggle notebook session.
 - If PhoBERT segmentation is needed, install the segmenter package in an extra setup cell before training.
-

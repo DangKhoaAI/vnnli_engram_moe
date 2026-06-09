@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import Dataset
 
 from vnnli_engram_moe.config import AppConfig
-from vnnli_engram_moe.data.io import read_records, validate_records
+from vnnli_engram_moe.data.io import read_hf_records, read_records, validate_records
 from vnnli_engram_moe.data.preprocess import TextPreprocessor, encode_records
 
 
@@ -35,9 +35,14 @@ def load_available_splits(config: AppConfig, tokenizer, preprocessor: TextPrepro
     }
     output: dict[str, EncodedSplit] = {}
     for split_name, source in split_files.items():
-        if not source:
+        if config.data.hf_dataset:
+            records = read_hf_records(split_name, config.data)
+        else:
+            if not source:
+                continue
+            records = read_records(source, config.data)
+        if not records:
             continue
-        records = read_records(source, config.data)
         validate_records(records, config.data)
         encoded = encode_records(
             records,
@@ -57,4 +62,3 @@ def collate_batch(batch: list[dict[str, object]]) -> dict[str, torch.Tensor]:
             continue
         tensor_batch[key] = torch.tensor([example[key] for example in batch], dtype=torch.long)
     return tensor_batch
-

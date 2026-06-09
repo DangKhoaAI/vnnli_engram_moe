@@ -20,6 +20,10 @@ def _build_common_overrides(args: argparse.Namespace) -> list[str]:
         overrides.append(f"data.validation_file={args.validation_file}")
     if getattr(args, "test_file", None):
         overrides.append(f"data.test_file={args.test_file}")
+    if getattr(args, "hf_dataset", None):
+        overrides.append(f"data.hf_dataset={json.dumps(args.hf_dataset)}")
+    if getattr(args, "hf_dataset_config", None):
+        overrides.append(f"data.hf_dataset_config={json.dumps(args.hf_dataset_config)}")
     if getattr(args, "output_dir", None):
         overrides.append(f"project.output_dir={json.dumps(args.output_dir)}")
     if getattr(args, "epochs", None) is not None:
@@ -51,6 +55,8 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--train-file")
     train_parser.add_argument("--validation-file")
     train_parser.add_argument("--test-file")
+    train_parser.add_argument("--hf-dataset", help="Hugging Face dataset id, for example uitnlp/ViANLI.")
+    train_parser.add_argument("--hf-dataset-config", help="Optional Hugging Face dataset configuration name.")
     train_parser.add_argument("--output-dir")
     train_parser.add_argument("--epochs", type=int)
     train_parser.add_argument("--batch-size", type=int)

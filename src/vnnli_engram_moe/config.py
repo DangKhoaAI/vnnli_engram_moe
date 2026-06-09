@@ -24,6 +24,8 @@ class DataTextColumns:
 
 @dataclass(slots=True)
 class DataConfig:
+    hf_dataset: str | None = None
+    hf_dataset_config: str | None = None
     train_file: str = "data/ViANLI/train.jsonl"
     validation_file: str = "data/ViANLI/dev.jsonl"
     test_file: str = "data/ViANLI/test.jsonl"

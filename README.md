@@ -51,6 +51,16 @@ uv run python scripts/train.py \
   --test-file data/ViANLI/test.jsonl
 ```
 
+Train directly from Hugging Face Datasets:
+
+```bash
+uv run python scripts/train.py \
+  --config configs/default.yaml \
+  --model-config configs/models/mbert_cased.yaml \
+  --hf-dataset uitnlp/ViANLI \
+  --run-name mbert_hf_dataset
+```
+
 Evaluate a saved run:
 
 ```bash
@@ -110,4 +120,3 @@ uv run python scripts/predict.py --help
 - Handoff status lives in `plan/STATE.md`
 
 More detailed docs are in [docs/PROJECT.md](/home/khoa/KHOA/FPTStudy/Semester7/DAT301m/PROJECT/train_model/docs/PROJECT.md).
-
