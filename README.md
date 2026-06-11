@@ -1,122 +1,137 @@
-# Vietnamese NLI Fine-tuning Toolkit
+# VNNLI Engram MoE
 
-Source code project for fine-tuning transformer baselines on Vietnamese Natural Language Inference (ViANLI / adversarial NLI), with clean extension points for future `moe` and `engram_moe` research.
+Repository này cung cấp một codebase fine-tuning cho bài toán Vietnamese Natural Language Inference (NLI).
+Scope hiện tại tập trung vào Design 1: transformer encoder + classification head cho bài toán phân loại cặp câu.
+Codebase đã được tổ chức sẵn để sau này có thể thêm `moe` và `engram_moe` mà không cần refactor lớn.
 
-The current implemented baseline is Design 1: transformer encoder + classification head for the three labels `entailment`, `contradiction`, and `neutral`. The repo also includes configs, CLI scripts, offline-first tests, and a Kaggle notebook that can clone the project and run setup/training.
+## Bài toán
+Model nhận vào một cặp câu:
+- `premise`
+- `hypothesis`
 
-## Environment
+Và dự đoán một trong 3 nhãn:
+- `entailment`
+- `contradiction`
+- `neutral`
 
+## Trạng thái hiện tại
+- Baseline Design 1 đã được implement
+- CLI train / evaluate / predict đã có
+- Config đã được centralize
+- Offline-first test suite đã có
+- Notebook Kaggle đã có
+- `moe` và `engram_moe` mới đang ở mức extension point
+
+Tóm tắt tiến độ:
+- Hoàn thành `8/8` bước cho baseline scope
+- Chưa hoàn thành phần MoE
+- Chưa hoàn thành phần Engram + MoE
+
+## Stack kỹ thuật
 - Python `3.12.13`
-- Target production stack: PyTorch `2.10.0+cu128`, Transformers `5.0.0`
-- Local workflow uses `uv`
+- PyTorch `2.10.0+cu128`
+- Transformers `5.0.0`
+- YAML config + typed Python schema
+- `uv` cho local environment
+- Pytest cho test và smoke run
+- Kaggle notebook cho flow clone / setup / train
 
-## Installation
-
-```bash
-uv venv --python 3.12
-uv pip install -e ".[dev]"
-```
-
-## Dataset Format
-
-Expected columns:
-
+## Model và data scope
+Model chính hiện tại: `bert-base-multilingual-cased`, `xlm-roberta-base`, `uitnlp/CafeBERT`, `vinai/phobert-base`.
+Schema đầu vào mong đợi:
 - `uid`
 - `premise`
 - `hypothesis`
 - `label`
 
-Accepted files today:
+Supported ingestion paths:
+- local JSONL
+- local CSV
+- optional local Parquet
+- Hugging Face dataset loading cho `uitnlp/ViANLI`
 
-- `.jsonl`
-- `.csv`
-- `.parquet` when parquet support is available in the environment
-
-Example JSONL row:
-
-```json
-{"uid":"uit_Adver_365_3_11_02","premise":"...","hypothesis":"...","label":"entailment"}
+## Cấu trúc repo
+```text
+configs/        config tổng và model-specific overrides
+notebooks/      notebook để upload lên Kaggle
+scripts/        train / evaluate / predict entry points
+src/            package chính
+tests/          unit tests và smoke tests
+plan/           bộ nhớ dài hạn cho agent
 ```
 
-## Quickstart
+Trong `plan/`:
+```text
+plan/project/   tài liệu planning và implementation chi tiết
+plan/status/    progress, decisions, blockers, agent workflow
+```
 
-Train:
+## Bắt đầu nhanh
+```bash
+uv venv --python 3.12
+uv pip install -e ".[dev]"
+uv run pytest
+```
 
+Train bằng Hugging Face dataset:
 ```bash
 uv run python scripts/train.py \
   --config configs/default.yaml \
   --model-config configs/models/mbert_cased.yaml \
-  --train-file data/ViANLI/train.jsonl \
-  --validation-file data/ViANLI/dev.jsonl \
-  --test-file data/ViANLI/test.jsonl
+  --hf-dataset uitnlp/ViANLI
 ```
 
-Train directly from Hugging Face Datasets:
-
+Train bằng local files:
 ```bash
 uv run python scripts/train.py \
   --config configs/default.yaml \
   --model-config configs/models/mbert_cased.yaml \
-  --hf-dataset uitnlp/ViANLI \
-  --run-name mbert_hf_dataset
+  --train-file path/to/train.jsonl \
+  --validation-file path/to/dev.jsonl \
+  --test-file path/to/test.jsonl
 ```
 
-Evaluate a saved run:
-
+Evaluate:
 ```bash
-uv run python scripts/evaluate.py --run-dir outputs/runs/<timestamp>_mbert_cased --split test
+uv run python scripts/evaluate.py --run-dir outputs/runs/<run_name> --split test
 ```
 
-Predict a single pair:
-
+Predict:
 ```bash
 uv run python scripts/predict.py \
-  --run-dir outputs/runs/<timestamp>_mbert_cased \
-  --premise "Công ty mở thêm văn phòng tại Đà Nẵng." \
-  --hypothesis "Công ty mở rộng hiện diện tại miền Trung."
+  --run-dir outputs/runs/<run_name> \
+  --premise "..." \
+  --hypothesis "..."
 ```
 
-## Config Strategy
+## Bên trong code có gì
+- `src/vnnli_engram_moe/config.py`: config loading và resolved config
+- `src/vnnli_engram_moe/data/`: đọc data, map label, preprocess, tokenize pair
+- `src/vnnli_engram_moe/models/registry.py`: chọn checkpoint và architecture builder
+- `src/vnnli_engram_moe/models/ffn.py`: baseline hiện tại
+- `src/vnnli_engram_moe/training/trainer.py`: orchestration cho train / eval / predict
+- `scripts/train.py`, `scripts/evaluate.py`, `scripts/predict.py`: CLI surface của repo
 
-All tunable values live in YAML:
+## Output và phạm vi còn lại
+Mỗi run được ghi vào `outputs/runs/`, thường gồm resolved config, metadata, label mapping, metrics, và final saved model.
 
-- `configs/default.yaml`: project-wide defaults
-- `configs/models/*.yaml`: model-specific overrides
-- optional experiment configs can layer on top later
+Đã xong:
+- baseline Design 1
+- config system
+- dataset pipeline
+- CLI train / evaluate / predict
+- Kaggle notebook
+- test suite cơ bản
+- project/status surface cho human và agent
 
-CLI overrides are also supported via `--override KEY=VALUE`.
+Chưa xong:
+- `moe`
+- `engram_moe`
+- quyết định cuối cùng về local artifact như `data.py`, `src.zip`, `vianli_kaggle/`, `vianli_kaggle.zip`
 
-## Project Structure
-
-```text
-configs/      YAML configs and model overrides
-docs/         project, data, experiment, and Kaggle documentation
-notebooks/    Kaggle wrapup notebook
-scripts/      thin train/evaluate/predict entrypoints
-src/          package implementation
-tests/        offline-first unit and smoke tests
-plan/         mutable planning and handoff state
-```
-
-## PhoBERT Note
-
-PhoBERT can optionally use VnCoreNLP-style word segmentation. The hook is present in the codebase and will try `py_vncorenlp` when installed. By default the project falls back to no-op segmentation unless strict mode is enabled later.
-
-## Verification
-
-Default validation path:
-
-```bash
-uv run pytest
-uv run python scripts/train.py --help
-uv run python scripts/evaluate.py --help
-uv run python scripts/predict.py --help
-```
-
-## Current Status
-
-- Implemented now: Design 1 FFN baseline path
-- Reserved for future work: `moe`, `engram_moe`
-- Handoff status lives in `plan/STATE.md`
-
-More detailed docs are in [docs/PROJECT.md](/home/khoa/KHOA/FPTStudy/Semester7/DAT301m/PROJECT/train_model/docs/PROJECT.md).
+## Nên đọc gì tiếp
+- Muốn hiểu dự án kỹ hơn: [PROJECT.md](PROJECT.md)
+- Muốn xem tình trạng hiện tại: [STATUS.md](STATUS.md)
+- Muốn xem implementation planning chi tiết: [plan/project/](plan/project/)
+- Muốn xem progress, decision, blocker của agent: [plan/status/](plan/status/)
+- Muốn xem notebook upload lên Kaggle: [notebooks/kaggle_wrapup.ipynb](notebooks/kaggle_wrapup.ipynb)
