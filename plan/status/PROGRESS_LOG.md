@@ -259,6 +259,30 @@ Append a new entry at the top or bottom of this file at the end of every work se
 
 ## 2026-06-11 - Codex Docs Surface Cleanup
 
+## 2026-06-11 - Codex Kaggle Notebook Default Runtime Refresh
+
+### Summary
+
+- Reworked the Kaggle notebook again to match the latest user instruction.
+- Added a markdown explanation directly above every code cell.
+- Removed the `.venv` / dependency-install flow so the notebook now uses Kaggle's default Python environment end to end.
+
+### Files Changed
+
+- `notebooks/kaggle_wrapup.ipynb`: added markdown-before-code structure and removed the venv/install cell in favor of Kaggle default runtime checks.
+- `plan/project/KAGGLE_RUNBOOK.md`: updated the notebook contract to require markdown before each code cell and default-environment execution.
+- `STATUS.md`: updated the public status notes and risks for the new Kaggle runtime behavior.
+- `plan/status/DECISIONS.md`: recorded the new notebook/runtime decision and superseded the earlier venv-oriented notebook decision.
+
+### Verification
+
+- `python3 -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `python3 - <<'PY' ... compile(...) ... PY`: passed; all notebook code cells compile successfully after the rewrite.
+
+### Next Recommended Action
+
+- Upload the revised notebook to Kaggle and confirm the default runtime image already includes the required package versions for one full training run.
+
 ## 2026-06-11 - Codex Kaggle Notebook Refresh
 
 ### Summary

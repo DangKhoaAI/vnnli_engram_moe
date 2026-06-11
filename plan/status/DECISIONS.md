@@ -97,7 +97,15 @@ Use this file for technical or process decisions that future agents should not h
 ## DEC-011: Kaggle Notebook Should Prefer Mounted Inputs And Offline-Friendly Setup
 
 - Date: 2026-06-11
-- Status: Accepted
+- Status: Superseded
 - Context: The updated human task and `INFO.md` now provide concrete Kaggle input mount paths for both the source repo and the ViANLI dataset, so the old GitHub-clone-first notebook no longer matches the real execution environment.
 - Decision: Refresh `notebooks/kaggle_wrapup.ipynb` so it discovers the mounted repo/data under `/kaggle/input`, copies the repo into `/kaggle/working`, creates a local environment from the current Kaggle interpreter, and installs the project in editable mode without re-downloading heavy dependencies when possible.
 - Consequences: The notebook is more robust for offline or restricted Kaggle sessions, but future changes to Kaggle mount names may still require editing the top configuration cell.
+
+## DEC-012: Kaggle Notebook Should Use The Default Kaggle Environment
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The latest user instruction says Kaggle already has the required libraries, so the notebook should not create a new virtual environment or reinstall packages. The user also wants every code cell to have a markdown explanation directly above it.
+- Decision: Keep the mounted-input notebook flow, but simplify execution so `notebooks/kaggle_wrapup.ipynb` runs entirely with Kaggle's default Python environment and inserts explanatory markdown cells before every code cell.
+- Consequences: The notebook becomes shorter and closer to real Kaggle usage, but it now depends more directly on whatever package versions Kaggle ships in its default runtime image.

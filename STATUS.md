@@ -11,7 +11,7 @@ This document is the main status entry point for the repository. It is meant to 
 - Project stage: baseline implementation completed
 - Active implemented design: Design 1 FFN-style transformer baseline
 - Future designs: `moe`, `engram_moe`
-- Verification level: baseline code path, tests, and smoke training were completed in a prior implementation session, and the Kaggle notebook has now been refreshed for the current mounted-input Kaggle layout
+- Verification level: baseline code path, tests, and smoke training were completed in a prior implementation session, and the Kaggle notebook has now been refreshed for the current mounted-input Kaggle layout with per-code-cell markdown plus default Kaggle environment usage
 
 ## 2. Progress Snapshot
 
@@ -44,7 +44,7 @@ The current baseline scope is tracked as 8 major steps.
 - evaluation CLI
 - prediction CLI
 - offline-first pytest suite
-- Kaggle notebook flow for mounted source/data inputs
+- Kaggle notebook flow for mounted source/data inputs and the default Kaggle Python environment
 
 ## 5. What Is Not Finished Yet
 
@@ -57,7 +57,7 @@ These are not regressions in the baseline; they are simply outside the currently
 ## 6. Open Issues And Risks
 
 - The refreshed Kaggle notebook is aligned to the mounted paths documented in `INFO.md`, but unusual Kaggle mount names may still require editing the top configuration cell.
-- The Kaggle notebook intentionally reuses system site packages when possible to reduce network dependency, so a future image change could still require revisiting the setup cell.
+- The refreshed Kaggle notebook now depends more directly on Kaggle's default runtime image, so a future package-version change in that image could require revisiting the notebook.
 - Future MoE work will need its own implementation and verification plan, even though the current structure already reserves the integration points.
 
 ## 7. Verification Snapshot
@@ -68,6 +68,7 @@ The baseline was previously verified through:
 - CLI help checks for train, evaluate, and predict
 - notebook JSON validation
 - notebook code-cell compilation after the mounted-input refresh
+- notebook structure refresh so every code cell has a markdown explanation above it
 - CUDA smoke training with a tiny checkpoint
 - Hugging Face dataset smoke training against the ViANLI dataset path used by the repo
 
@@ -75,7 +76,7 @@ This means the project is past the planning-only stage and already has a validat
 
 ## 8. Recommended Next Actions
 
-- Upload the refreshed notebook to Kaggle and run one end-to-end mBERT training pass against the mounted ViANLI dataset.
+- Upload the refreshed notebook to Kaggle and run one end-to-end mBERT training pass against the mounted ViANLI dataset in the default Kaggle runtime.
 - If future research continues, implement `moe` first because the project already reserves a clean registry path for it.
 - Keep `PROJECT.md` and this `STATUS.md` aligned whenever the repository surface or implementation scope changes.
 

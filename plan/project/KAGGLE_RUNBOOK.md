@@ -6,11 +6,10 @@ Create a notebook the user can upload to Kaggle. When executed, it should:
 
 1. Find the mounted source repo under `/kaggle/input`.
 2. Copy the repo into `/kaggle/working/{repo}`.
-3. Create a local environment from the current Kaggle interpreter.
-4. Install the project in editable mode without depending on a live network download.
-5. Resolve the mounted ViANLI split files automatically.
-6. Run training.
-7. Save outputs to Kaggle working directory.
+3. Use the default Kaggle Python environment directly.
+4. Resolve the mounted ViANLI split files automatically.
+5. Run training.
+6. Save outputs to Kaggle working directory.
 
 ## Current Kaggle Mount Hints
 
@@ -38,12 +37,16 @@ The primary notebook target is `notebooks/kaggle_wrapup.ipynb`. If a future user
 Recommended cells:
 
 1. Markdown: title and variables explanation.
-2. Code: define run variables and Kaggle mount hints.
-3. Code: resolve mounted repo/data paths and copy the repo into `/kaggle/working`.
-4. Code: create `.venv`, install the project, and verify versions/GPU.
-5. Code: run optional tests/help checks.
-6. Code: run training.
-7. Code: show output files and metrics.
+2. Markdown: explain the config cell.
+3. Code: define run variables and Kaggle mount hints.
+4. Markdown: explain repo/data discovery.
+5. Code: resolve mounted repo/data paths and copy the repo into `/kaggle/working`.
+6. Markdown: explain default-environment verification.
+7. Code: verify versions/GPU and optionally run tests with Kaggle's default Python.
+8. Markdown: explain the training cell.
+9. Code: run training.
+10. Markdown: explain the artifact summary cell.
+11. Code: show output files and metrics.
 
 ## Suggested Variables
 
@@ -69,9 +72,8 @@ EXTRA_OVERRIDES = []
 ```bash
 cp -r /kaggle/input/.../vnnli_engram_moe-main /kaggle/working/vnnli_engram_moe
 cd /kaggle/working/vnnli_engram_moe
-uv venv --python "$(python -c 'import sys; print(sys.executable)')" --system-site-packages
-uv pip install --python .venv/bin/python --no-deps -e ".[dev]"
-.venv/bin/python scripts/train.py \
+python scripts/train.py --help
+python scripts/train.py \
   --config configs/default.yaml \
   --user-config configs/kaggle.yaml \
   --model-config configs/models/mbert_cased.yaml \
@@ -80,13 +82,6 @@ uv pip install --python .venv/bin/python --no-deps -e ".[dev]"
   --test-file /kaggle/input/.../test.jsonl \
   --output-dir /kaggle/working/outputs/runs \
   --run-name kaggle_mbert_vianli
-```
-
-If `uv` is unavailable in the Kaggle image, the notebook should fall back to:
-
-```bash
-python -m venv .venv --system-site-packages
-.venv/bin/python -m pip install --no-deps -e ".[dev]"
 ```
 
 ## Kaggle Config Differences
@@ -103,6 +98,7 @@ training:
 ```
 
 If Kaggle GPU does not support fp16 well, notebook should expose a variable to turn it off.
+The notebook should not create a separate virtual environment unless a future user explicitly asks for it.
 
 ## Dataset Mounting Assumption
 
@@ -142,6 +138,8 @@ Notebook is acceptable when:
 - It is valid `.ipynb` JSON.
 - It has no local machine paths.
 - All user-adjustable values are in one top cell.
+- Every code cell has a markdown explanation directly above it.
 - It can run mounted-source setup without manual shell editing.
 - It can run default `mBERT + FFN` training against the mounted ViANLI data described in `INFO.md`.
+- It uses Kaggle's default Python environment instead of creating a new virtual environment.
 - It does not depend on a live GitHub clone to begin execution.
