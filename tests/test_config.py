@@ -10,6 +10,7 @@ def test_default_config_loads() -> None:
     assert config.training.max_length == 256
     assert config.training.num_train_epochs == 7
     assert config.model.architecture == "ffn"
+    assert config.model.local_files_only is False
 
 
 def test_model_config_merges_into_default() -> None:
@@ -38,3 +39,11 @@ def test_cli_style_overrides_work() -> None:
     assert config.project.output_dir == output_dir.as_posix()
     assert config.training.max_steps == 3
 
+
+def test_local_files_only_override_works() -> None:
+    config = load_config(
+        "configs/default.yaml",
+        overrides=["model.local_files_only=true"],
+    )
+
+    assert config.model.local_files_only is True

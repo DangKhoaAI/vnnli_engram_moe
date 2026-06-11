@@ -19,7 +19,7 @@ Và dự đoán một trong 3 nhãn:
 - CLI train / evaluate / predict đã có
 - Config đã được centralize
 - Offline-first test suite đã có
-- Notebook Kaggle đã có và đã bám flow mounted input hiện tại
+- Notebook Kaggle đã có và đã bám flow mounted source/data/model input hiện tại
 - `moe` và `engram_moe` mới đang ở mức extension point
 
 Tóm tắt tiến độ:

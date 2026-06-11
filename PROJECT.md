@@ -44,7 +44,7 @@ These future architectures are represented in the codebase as extension points, 
 - YAML configuration plus typed Python config schema
 - CLI-based workflow through `scripts/train.py`, `scripts/evaluate.py`, and `scripts/predict.py`
 - Pytest for automated testing
-- Kaggle-oriented execution path via `notebooks/kaggle_wrapup.ipynb`, using mounted Kaggle inputs for source code and ViANLI data
+- Kaggle-oriented execution path via `notebooks/kaggle_wrapup.ipynb`, using mounted Kaggle inputs for source code, ViANLI data, and local model directories
 
 The architecture is intentionally conservative:
 
@@ -178,6 +178,19 @@ Typical training flow with local files:
 uv run python scripts/train.py \
   --config configs/default.yaml \
   --model-config configs/models/mbert_cased.yaml \
+  --train-file path/to/train.jsonl \
+  --validation-file path/to/dev.jsonl \
+  --test-file path/to/test.jsonl
+```
+
+Typical offline training flow with a local mounted model directory:
+
+```bash
+uv run python scripts/train.py \
+  --config configs/default.yaml \
+  --model-config configs/models/mbert_cased.yaml \
+  --checkpoint /kaggle/input/.../mbert \
+  --local-files-only \
   --train-file path/to/train.jsonl \
   --validation-file path/to/dev.jsonl \
   --test-file path/to/test.jsonl

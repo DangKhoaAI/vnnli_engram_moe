@@ -6,10 +6,11 @@ Create a notebook the user can upload to Kaggle. When executed, it should:
 
 1. Find the mounted source repo under `/kaggle/input`.
 2. Copy the repo into `/kaggle/working/{repo}`.
-3. Use the default Kaggle Python environment directly.
-4. Resolve the mounted ViANLI split files automatically.
-5. Run training.
-6. Save outputs to Kaggle working directory.
+3. Resolve the mounted ViANLI split files automatically.
+4. Resolve the mounted local model directory automatically.
+5. Use the default Kaggle Python environment directly.
+6. Run training without depending on internet access.
+7. Save outputs to Kaggle working directory.
 
 ## Current Kaggle Mount Hints
 
@@ -18,6 +19,7 @@ The current human-provided Kaggle paths in `INFO.md` are:
 ```text
 /kaggle/input/datasets/khoa05ai/fu-s7dat-tuningmodel/vnnli_engram_moe-main
 /kaggle/input/datasets/khoa05ai/fu-s7dat-vieanli/vianli_kaggle
+/kaggle/input/models/khoa05ai/fpt-s7dat-model-mbert/transformers/default/1/mbert
 ```
 
 The notebook should still keep these as editable hints, not hard requirements.
@@ -39,12 +41,12 @@ Recommended cells:
 1. Markdown: title and variables explanation.
 2. Markdown: explain the config cell.
 3. Code: define run variables and Kaggle mount hints.
-4. Markdown: explain repo/data discovery.
-5. Code: resolve mounted repo/data paths and copy the repo into `/kaggle/working`.
+4. Markdown: explain repo/data/model discovery.
+5. Code: resolve mounted repo/data/model paths and copy the repo into `/kaggle/working`.
 6. Markdown: explain default-environment verification.
-7. Code: verify versions/GPU and optionally run tests with Kaggle's default Python.
+7. Code: verify versions/GPU and smoke-load the local model with Kaggle's default Python.
 8. Markdown: explain the training cell.
-9. Code: run training.
+9. Code: run training with the mounted model directory.
 10. Markdown: explain the artifact summary cell.
 11. Code: show output files and metrics.
 
@@ -53,6 +55,7 @@ Recommended cells:
 ```python
 REPO_SOURCE_HINT = "/kaggle/input/datasets/khoa05ai/fu-s7dat-tuningmodel/vnnli_engram_moe-main"
 DATASET_DIR_HINT = "/kaggle/input/datasets/khoa05ai/fu-s7dat-vieanli/vianli_kaggle"
+MODEL_SOURCE_HINT = "/kaggle/input/models/khoa05ai/fpt-s7dat-model-mbert/transformers/default/1/mbert"
 REPO_DIR = "/kaggle/working/vnnli_engram_moe"
 OUTPUT_ROOT = "/kaggle/working/outputs/runs"
 
@@ -63,6 +66,7 @@ RUN_NAME = "kaggle_mbert_vianli"
 
 RUN_PYTEST = False
 USE_FP16 = True
+LOCAL_FILES_ONLY = True
 MAKE_OUTPUT_ZIP = False
 EXTRA_OVERRIDES = []
 ```
@@ -77,6 +81,8 @@ python scripts/train.py --help
   --config /kaggle/working/vnnli_engram_moe/configs/default.yaml \
   --user-config /kaggle/working/vnnli_engram_moe/configs/kaggle.yaml \
   --model-config /kaggle/working/vnnli_engram_moe/configs/models/mbert_cased.yaml \
+  --checkpoint /kaggle/input/.../mbert \
+  --local-files-only \
   --train-file /kaggle/input/.../train.jsonl \
   --validation-file /kaggle/input/.../validation.csv \
   --test-file /kaggle/input/.../test.jsonl \
@@ -99,6 +105,7 @@ training:
 
 If Kaggle GPU does not support fp16 well, notebook should expose a variable to turn it off.
 The notebook should not create a separate virtual environment unless a future user explicitly asks for it.
+The notebook should default to a mounted model directory plus `--local-files-only` so `transformers` does not try to reach the Hugging Face Hub.
 
 ## Dataset Mounting Assumption
 
@@ -112,6 +119,18 @@ Support these likely names:
 
 If files are missing, notebook should print the contents of `/kaggle/input` to help the user adjust paths.
 If only `validation.json` exists, the notebook should fail with a clear message because the repo expects JSONL, CSV, or Parquet for direct file loading.
+
+## Model Mounting Assumption
+
+The notebook should not assume internet access for model downloads.
+
+Support this mounted-model pattern:
+
+- a directory containing `config.json`
+- at least one weight file such as `model.safetensors` or `pytorch_model.bin`
+- tokenizer files such as `tokenizer.json`, `tokenizer_config.json`, `vocab.txt`, or `tokenizer.model`
+
+If no such model directory is found, notebook should print `/kaggle/input/models` and `/kaggle/input` to help the user adjust `MODEL_SOURCE_HINT`.
 
 ## Output Contract
 
@@ -141,7 +160,9 @@ Notebook is acceptable when:
 - Every code cell has a markdown explanation directly above it.
 - It can run mounted-source setup without manual shell editing.
 - It can run default `mBERT + FFN` training against the mounted ViANLI data described in `INFO.md`.
+- It can run default `mBERT + FFN` training against the mounted local mBERT directory described in `INFO.md`.
 - It uses Kaggle's default Python environment instead of creating a new virtual environment.
 - It uses absolute paths for `scripts/train.py` and config files so manual notebook cwd differences do not break training.
+- It passes the mounted model directory through the train CLI without relying on Hugging Face Hub downloads.
 - It prints captured `stdout` and `stderr` when a subprocess fails.
 - It does not depend on a live GitHub clone to begin execution.

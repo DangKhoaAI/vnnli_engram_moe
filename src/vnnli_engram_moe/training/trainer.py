@@ -32,6 +32,7 @@ def load_tokenizer(config: AppConfig, *, checkpoint: str | None = None):
     return AutoTokenizer.from_pretrained(
         resolved_checkpoint,
         use_fast=config.model.use_fast_tokenizer,
+        local_files_only=config.model.local_files_only,
     )
 
 

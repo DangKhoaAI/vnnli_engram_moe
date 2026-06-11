@@ -7,7 +7,10 @@ from vnnli_engram_moe.constants import ID2LABEL, LABEL2ID
 def build_ffn_model(config: AppConfig, *, checkpoint: str, pretrained: bool = True):
     from transformers import AutoConfig, AutoModelForSequenceClassification
 
-    model_config = AutoConfig.from_pretrained(checkpoint)
+    model_config = AutoConfig.from_pretrained(
+        checkpoint,
+        local_files_only=config.model.local_files_only,
+    )
     model_config.num_labels = config.model.num_labels
     model_config.id2label = ID2LABEL
     model_config.label2id = LABEL2ID
@@ -22,6 +25,6 @@ def build_ffn_model(config: AppConfig, *, checkpoint: str, pretrained: bool = Tr
             checkpoint,
             config=model_config,
             ignore_mismatched_sizes=True,
+            local_files_only=config.model.local_files_only,
         )
     return AutoModelForSequenceClassification.from_config(model_config)
-

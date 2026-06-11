@@ -109,3 +109,11 @@ Use this file for technical or process decisions that future agents should not h
 - Context: The latest user instruction says Kaggle already has the required libraries, so the notebook should not create a new virtual environment or reinstall packages. The user also wants every code cell to have a markdown explanation directly above it.
 - Decision: Keep the mounted-input notebook flow, but simplify execution so `notebooks/kaggle_wrapup.ipynb` runs entirely with Kaggle's default Python environment and inserts explanatory markdown cells before every code cell.
 - Consequences: The notebook becomes shorter and closer to real Kaggle usage, but it now depends more directly on whatever package versions Kaggle ships in its default runtime image.
+
+## DEC-013: Treat Mounted Local Model Directories As First-Class Training Checkpoints
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The latest human task says Kaggle internet access cannot be used to download models from the Hugging Face Hub, and `INFO.md` now provides a mounted local mBERT directory under `/kaggle/input/models/...`.
+- Decision: Extend the train CLI so `--checkpoint` can explicitly point at a mounted model directory and add `--local-files-only` so tokenizer/config/model loading can be forced to stay local. Refresh the Kaggle notebook to auto-detect a local Transformers directory and pass that path through the train command.
+- Consequences: Offline Kaggle runs become a first-class supported path instead of relying on raw `--override` strings, but the mounted model directory now has to preserve a standard local Transformers file layout.

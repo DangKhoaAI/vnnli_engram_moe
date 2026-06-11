@@ -14,6 +14,8 @@ def _build_common_overrides(args: argparse.Namespace) -> list[str]:
     if getattr(args, "model_key", None):
         overrides.append(f"model.model_key={args.model_key}")
         overrides.append(f"model.checkpoint={json.dumps(get_checkpoint(args.model_key))}")
+    if getattr(args, "checkpoint", None):
+        overrides.append(f"model.checkpoint={json.dumps(args.checkpoint)}")
     if getattr(args, "train_file", None):
         overrides.append(f"data.train_file={args.train_file}")
     if getattr(args, "validation_file", None):
@@ -39,6 +41,8 @@ def _build_common_overrides(args: argparse.Namespace) -> list[str]:
         overrides.append(f"project.run_name={json.dumps(args.run_name)}")
     if getattr(args, "device", None):
         overrides.append(f"training.device={json.dumps(args.device)}")
+    if getattr(args, "local_files_only", False):
+        overrides.append("model.local_files_only=true")
     return overrides
 
 
@@ -52,6 +56,10 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--user-config", help="Optional experiment override YAML.")
     train_parser.add_argument("--override", action="append", help="Extra KEY=VALUE override.")
     train_parser.add_argument("--model-key")
+    train_parser.add_argument(
+        "--checkpoint",
+        help="Optional pretrained model id or local directory override for training.",
+    )
     train_parser.add_argument("--train-file")
     train_parser.add_argument("--validation-file")
     train_parser.add_argument("--test-file")
@@ -64,6 +72,11 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--max-steps", type=int)
     train_parser.add_argument("--run-name")
     train_parser.add_argument("--device")
+    train_parser.add_argument(
+        "--local-files-only",
+        action="store_true",
+        help="Force Transformers to resolve model/tokenizer/config only from local files or cache.",
+    )
     train_parser.add_argument(
         "--random-init",
         action="store_true",

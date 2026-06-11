@@ -283,6 +283,30 @@ Append a new entry at the top or bottom of this file at the end of every work se
 
 - Upload the revised notebook to Kaggle and confirm the default runtime image already includes the required package versions for one full training run.
 
+## 2026-06-11 - Codex Kaggle Path Debug Follow-Up
+
+### Summary
+
+- Investigated the Kaggle failure pattern reported by the user.
+- Identified that the manual debug commands were running from `/kaggle/working`, while `scripts/train.py` and `configs/default.yaml` live under `/kaggle/working/vnnli_engram_moe`.
+- Hardened the notebook so it calls `scripts/train.py` and all config files by absolute path and prints captured subprocess output on failure.
+
+### Files Changed
+
+- `notebooks/kaggle_wrapup.ipynb`: changed train/help commands to absolute repo paths and improved `run()` failure logging.
+- `plan/project/KAGGLE_RUNBOOK.md`: documented the absolute-path command pattern and subprocess-output acceptance requirement.
+- `STATUS.md`: recorded the Kaggle cwd/path debugging note.
+- `plan/status/PROGRESS_LOG.md`: appended this follow-up entry.
+
+### Verification
+
+- `python3 -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `python3 - <<'PY' ... compile(...) ... PY`: passed; all notebook code cells compile successfully.
+
+### Next Recommended Action
+
+- Re-upload the notebook to Kaggle and rerun the training cell. If it still fails, the printed traceback should now show the real training/runtime issue instead of only `CalledProcessError`.
+
 ## 2026-06-11 - Codex Kaggle Notebook Refresh
 
 ### Summary
@@ -337,3 +361,37 @@ Append a new entry at the top or bottom of this file at the end of every work se
 ### Next Recommended Action
 
 - Keep the public repo documentation concentrated in `README.md`, `PROJECT.md`, and `STATUS.md` unless a new explicit need appears.
+
+## 2026-06-11 - Codex Kaggle Local-Model Notebook Update
+
+### Summary
+
+- Added a first-class train CLI path for mounted local model directories via `--checkpoint`.
+- Added `--local-files-only` plus config/model propagation so `transformers` can be forced to stay offline when loading tokenizer/config/model assets.
+- Refreshed the Kaggle notebook so it auto-detects mounted repo/data/model inputs, smoke-loads the mounted model before training, and runs the default `mBERT + FFN` flow without relying on Hugging Face Hub downloads.
+
+### Files Changed
+
+- `src/vnnli_engram_moe/cli.py`: added train-time `--checkpoint` and `--local-files-only` handling.
+- `src/vnnli_engram_moe/config.py`: added `model.local_files_only`.
+- `src/vnnli_engram_moe/training/trainer.py`: passed `local_files_only` into tokenizer loading.
+- `src/vnnli_engram_moe/models/ffn.py`: passed `local_files_only` into config/model loading.
+- `tests/test_config.py`: covered the new config default and override.
+- `tests/test_local_model_loading.py`: added regression tests for CLI override precedence and offline local-loading propagation.
+- `notebooks/kaggle_wrapup.ipynb`: rewrote the notebook flow around mounted source/data/model discovery and offline local-model training.
+- `README.md`, `AGENT.md`, `PROJECT.md`, `STATUS.md`: aligned the public repo surface with the mounted local-model Kaggle flow.
+- `plan/project/KAGGLE_RUNBOOK.md`: updated the deeper Kaggle contract and acceptance criteria.
+- `plan/status/DECISIONS.md`: recorded the mounted-local-model decision.
+- `plan/status/BLOCKERS.md`: added the mounted-model-layout risk.
+
+### Verification
+
+- `./.venv/bin/python -m pytest tests/test_config.py tests/test_local_model_loading.py tests/test_smoke_train.py`: passed.
+- `./.venv/bin/python -m pytest`: passed; `19 passed`.
+- `./.venv/bin/python scripts/train.py --help`: passed and showed `--checkpoint` plus `--local-files-only`.
+- `./.venv/bin/python -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `./.venv/bin/python - <<'PY' ... compile(...) ... PY`: passed; all notebook code cells compile successfully.
+
+### Next Recommended Action
+
+- Upload the refreshed notebook to Kaggle and run one full offline training pass using the mounted ViANLI dataset plus the mounted local mBERT directory from `INFO.md`.

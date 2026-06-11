@@ -11,7 +11,7 @@ This document is the main status entry point for the repository. It is meant to 
 - Project stage: baseline implementation completed
 - Active implemented design: Design 1 FFN-style transformer baseline
 - Future designs: `moe`, `engram_moe`
-- Verification level: baseline code path, tests, and smoke training were completed in a prior implementation session, and the Kaggle notebook has now been refreshed for the current mounted-input Kaggle layout with per-code-cell markdown plus default Kaggle environment usage
+- Verification level: baseline code path, tests, and smoke training were completed in a prior implementation session, and the Kaggle notebook plus train CLI have now been refreshed for the current mounted source/data/model Kaggle layout with per-code-cell markdown, local-checkpoint loading, and default Kaggle environment usage
 
 ## 2. Progress Snapshot
 
@@ -43,21 +43,24 @@ The current baseline scope is tracked as 8 major steps.
 - training CLI
 - evaluation CLI
 - prediction CLI
+- local-checkpoint training via `--checkpoint` and `--local-files-only`
 - offline-first pytest suite
-- Kaggle notebook flow for mounted source/data inputs and the default Kaggle Python environment
+- Kaggle notebook flow for mounted source/data/model inputs and the default Kaggle Python environment
 
 ## 5. What Is Not Finished Yet
 
 - `moe` is still only an extension point
 - `engram_moe` is still only an extension point
-- alternate Kaggle mount names may still require editing the top configuration cell in the notebook, even though the current notebook now auto-detects the known mounted source/data layout
+- alternate Kaggle mount names may still require editing the top configuration cell in the notebook, even though the current notebook now auto-detects the known mounted source/data/model layout
 
 These are not regressions in the baseline; they are simply outside the currently implemented scope.
 
 ## 6. Open Issues And Risks
 
 - The refreshed Kaggle notebook is aligned to the mounted paths documented in `INFO.md`, but unusual Kaggle mount names may still require editing the top configuration cell.
+- The Kaggle runtime still needs the mounted Transformer checkpoint directory to contain a standard local `transformers` layout (`config.json`, weights, tokenizer files); otherwise the notebook will stop early with a clear path-resolution error.
 - The refreshed Kaggle notebook now depends more directly on Kaggle's default runtime image, so a future package-version change in that image could require revisiting the notebook.
+- Manual Kaggle shell debugging must either run from `/kaggle/working/vnnli_engram_moe` or use absolute paths for both `scripts/train.py` and config files; the notebook now uses absolute paths for those values.
 - Future MoE work will need its own implementation and verification plan, even though the current structure already reserves the integration points.
 
 ## 7. Verification Snapshot
@@ -66,9 +69,12 @@ The baseline was previously verified through:
 
 - pytest passing in the project virtual environment
 - CLI help checks for train, evaluate, and predict
+- local-checkpoint CLI help check for `scripts/train.py --checkpoint ... --local-files-only`
 - notebook JSON validation
-- notebook code-cell compilation after the mounted-input refresh
+- notebook code-cell compilation after the mounted source/data/model refresh
 - notebook structure refresh so every code cell has a markdown explanation above it
+- notebook path hardening so training uses absolute script/config paths, prints subprocess failure output, and smoke-loads the mounted local model before training
+- pytest coverage for local model loading and local-files-only config propagation
 - CUDA smoke training with a tiny checkpoint
 - Hugging Face dataset smoke training against the ViANLI dataset path used by the repo
 
@@ -76,7 +82,7 @@ This means the project is past the planning-only stage and already has a validat
 
 ## 8. Recommended Next Actions
 
-- Upload the refreshed notebook to Kaggle and run one end-to-end mBERT training pass against the mounted ViANLI dataset in the default Kaggle runtime.
+- Upload the refreshed notebook to Kaggle and run one end-to-end mBERT training pass against the mounted ViANLI dataset plus the mounted local mBERT checkpoint in the default Kaggle runtime with internet disabled.
 - If future research continues, implement `moe` first because the project already reserves a clean registry path for it.
 - Keep `PROJECT.md` and this `STATUS.md` aligned whenever the repository surface or implementation scope changes.
 

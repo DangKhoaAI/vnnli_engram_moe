@@ -42,6 +42,7 @@ class ModelConfig:
     architecture: str = "ffn"
     num_labels: int = 3
     use_fast_tokenizer: bool = True
+    local_files_only: bool = False
     requires_word_segmentation: bool = False
     allow_noop_word_segmenter: bool = True
 
