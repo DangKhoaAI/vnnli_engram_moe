@@ -73,10 +73,10 @@ EXTRA_OVERRIDES = []
 cp -r /kaggle/input/.../vnnli_engram_moe-main /kaggle/working/vnnli_engram_moe
 cd /kaggle/working/vnnli_engram_moe
 python scripts/train.py --help
-python scripts/train.py \
-  --config configs/default.yaml \
-  --user-config configs/kaggle.yaml \
-  --model-config configs/models/mbert_cased.yaml \
+/usr/bin/python3 /kaggle/working/vnnli_engram_moe/scripts/train.py \
+  --config /kaggle/working/vnnli_engram_moe/configs/default.yaml \
+  --user-config /kaggle/working/vnnli_engram_moe/configs/kaggle.yaml \
+  --model-config /kaggle/working/vnnli_engram_moe/configs/models/mbert_cased.yaml \
   --train-file /kaggle/input/.../train.jsonl \
   --validation-file /kaggle/input/.../validation.csv \
   --test-file /kaggle/input/.../test.jsonl \
@@ -142,4 +142,6 @@ Notebook is acceptable when:
 - It can run mounted-source setup without manual shell editing.
 - It can run default `mBERT + FFN` training against the mounted ViANLI data described in `INFO.md`.
 - It uses Kaggle's default Python environment instead of creating a new virtual environment.
+- It uses absolute paths for `scripts/train.py` and config files so manual notebook cwd differences do not break training.
+- It prints captured `stdout` and `stderr` when a subprocess fails.
 - It does not depend on a live GitHub clone to begin execution.
