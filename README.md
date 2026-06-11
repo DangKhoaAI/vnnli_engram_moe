@@ -19,7 +19,7 @@ Và dự đoán một trong 3 nhãn:
 - CLI train / evaluate / predict đã có
 - Config đã được centralize
 - Offline-first test suite đã có
-- Notebook Kaggle đã có
+- Notebook Kaggle đã có và đã bám flow mounted input hiện tại
 - `moe` và `engram_moe` mới đang ở mức extension point
 
 Tóm tắt tiến độ:
@@ -34,7 +34,7 @@ Tóm tắt tiến độ:
 - YAML config + typed Python schema
 - `uv` cho local environment
 - Pytest cho test và smoke run
-- Kaggle notebook cho flow clone / setup / train
+- Kaggle notebook cho flow setup / train tren mounted Kaggle inputs
 
 ## Model và data scope
 Model chính hiện tại: `bert-base-multilingual-cased`, `xlm-roberta-base`, `uitnlp/CafeBERT`, `vinai/phobert-base`.

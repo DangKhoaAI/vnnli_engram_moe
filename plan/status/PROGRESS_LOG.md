@@ -259,6 +259,34 @@ Append a new entry at the top or bottom of this file at the end of every work se
 
 ## 2026-06-11 - Codex Docs Surface Cleanup
 
+## 2026-06-11 - Codex Kaggle Notebook Refresh
+
+### Summary
+
+- Rewrote `notebooks/kaggle_wrapup.ipynb` around the Kaggle mount information now documented in `INFO.md`.
+- Switched the notebook from a GitHub-clone-first flow to a mounted-source copy flow with automatic ViANLI split discovery.
+- Updated the public/project status docs so future sessions can see why the Kaggle flow changed.
+
+### Files Changed
+
+- `notebooks/kaggle_wrapup.ipynb`: replaced the old clone-based Kaggle flow with mounted source/data discovery, offline-friendly environment setup, default mBERT training, and artifact summary cells.
+- `AGENT.md`: noted that Kaggle flow now prefers mounted inputs over live clone.
+- `README.md`: aligned the short human-facing summary with the current Kaggle notebook behavior.
+- `PROJECT.md`: aligned the project overview with the mounted-input Kaggle execution path.
+- `STATUS.md`: refreshed the public status/risk text for the new notebook behavior.
+- `plan/project/KAGGLE_RUNBOOK.md`: updated the deeper Kaggle contract and acceptance criteria.
+- `plan/status/BLOCKERS.md`: resolved the old dataset-path blocker and removed stale active blockers.
+- `plan/status/DECISIONS.md`: recorded the mounted-input/offline-friendly notebook decision.
+
+### Verification
+
+- `python3 -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `python3 - <<'PY' ... compile(...) ... PY`: passed; all notebook code cells compile successfully.
+
+### Next Recommended Action
+
+- Upload the refreshed notebook to Kaggle and run one end-to-end training pass against the mounted ViANLI dataset to verify the real production image behavior.
+
 ### Summary
 
 - Removed `docs/` from the active repository contract.

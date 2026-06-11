@@ -93,3 +93,11 @@ Use this file for technical or process decisions that future agents should not h
 - Context: The user explicitly requested that `docs/` be cleaned up and removed from active references because it is no longer needed.
 - Decision: Remove the `docs/` directory from the repository surface and stop using it in active documentation references. Consolidate public repository documentation into `README.md`, `PROJECT.md`, and `STATUS.md`.
 - Consequences: Future documentation should either live in the top-level repo entry-point files or in `plan/project/` when it is implementation-planning context rather than user-facing repo documentation.
+
+## DEC-011: Kaggle Notebook Should Prefer Mounted Inputs And Offline-Friendly Setup
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The updated human task and `INFO.md` now provide concrete Kaggle input mount paths for both the source repo and the ViANLI dataset, so the old GitHub-clone-first notebook no longer matches the real execution environment.
+- Decision: Refresh `notebooks/kaggle_wrapup.ipynb` so it discovers the mounted repo/data under `/kaggle/input`, copies the repo into `/kaggle/working`, creates a local environment from the current Kaggle interpreter, and installs the project in editable mode without re-downloading heavy dependencies when possible.
+- Consequences: The notebook is more robust for offline or restricted Kaggle sessions, but future changes to Kaggle mount names may still require editing the top configuration cell.

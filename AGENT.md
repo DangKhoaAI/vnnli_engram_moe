@@ -39,7 +39,7 @@ This is the short entry point for future agents working in this repository.
 
 - Implemented baseline: Design 1 FFN-style fine-tuning path.
 - Reserved for future research: `moe`, `engram_moe`.
-- Kaggle clone/setup/train flow is part of the repository contract.
+- Kaggle setup/train flow is part of the repository contract, and the notebook now prefers mounted Kaggle inputs over live Git clone.
 
 ## Session Discipline
 

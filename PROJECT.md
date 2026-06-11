@@ -27,7 +27,7 @@ If any derived documentation disagrees with those two files, `TASK.md` and `INFO
 - Centralized YAML configuration
 - CLI entry points for training, evaluation, and prediction
 - Offline-first tests
-- Kaggle notebook for clone, setup, and training flow
+- Kaggle notebook for mounted-source setup and training flow
 
 ### Reserved for future work
 
@@ -44,7 +44,7 @@ These future architectures are represented in the codebase as extension points, 
 - YAML configuration plus typed Python config schema
 - CLI-based workflow through `scripts/train.py`, `scripts/evaluate.py`, and `scripts/predict.py`
 - Pytest for automated testing
-- Kaggle-oriented execution path via `notebooks/kaggle_wrapup.ipynb`
+- Kaggle-oriented execution path via `notebooks/kaggle_wrapup.ipynb`, using mounted Kaggle inputs for source code and ViANLI data
 
 The architecture is intentionally conservative:
 

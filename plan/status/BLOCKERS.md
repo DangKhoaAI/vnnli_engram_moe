@@ -6,8 +6,7 @@ Use this file to track anything that blocks implementation or requires user inpu
 
 | ID | Status | Blocker | Needed To Resolve | Owner |
 | --- | --- | --- | --- | --- |
-| B-001 | Open | Exact ViANLI dataset path is unknown | Keep data paths configurable; ask user only when running full training locally | Future implementation agent |
-| B-002 | Resolved | Base local environment does not have `uv`, `pytest`, or `torch` available on `PATH` | Resolved by creating `.venv`, installing GPU PyTorch and the project dependencies there | Codex |
+| - | - | No active blockers at the moment | - | - |
 
 ## Active Risks
 
@@ -23,6 +22,7 @@ Use this file to track anything that blocks implementation or requires user inpu
 
 | ID | Resolved Date | Resolution |
 | --- | --- | --- |
+| B-001 | 2026-06-11 | Refreshed `notebooks/kaggle_wrapup.ipynb` so it searches `/kaggle/input` for the mounted source repo and ViANLI data, then picks supported train/validation/test files automatically. |
 | B-002 | 2026-06-09 | Created `.venv`, installed `torch==2.10.0+cu128` plus the project dependencies, then verified pytest and a CUDA smoke train. |
 
 ## Blocker Entry Template
