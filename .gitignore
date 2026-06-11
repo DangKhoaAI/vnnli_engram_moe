@@ -11,3 +11,5 @@ dist/
 outputs/
 .ipynb_checkpoints/
 
+INFO.md
+TASK.md

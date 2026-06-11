@@ -25,7 +25,7 @@ Target file:
 notebooks/kaggle_wrapup.ipynb
 ```
 
-The existing root `Finetuning.ipynb` is empty. Future implementer can either leave it untouched or replace it only if the user explicitly wants that exact filename.
+The primary notebook target is `notebooks/kaggle_wrapup.ipynb`. If a future user explicitly asks for a different top-level notebook filename, treat that as a separate repo-surface decision.
 
 ## Notebook Structure
 
@@ -135,4 +135,3 @@ Notebook is acceptable when:
 - All user-adjustable values are in one top cell.
 - It can run clone/setup without manual shell editing.
 - It can run at least smoke training without needing full ViANLI data.
-

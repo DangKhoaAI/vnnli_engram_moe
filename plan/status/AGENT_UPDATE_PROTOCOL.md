@@ -6,23 +6,25 @@ This plan directory is not static. Every agent should update it as work progress
 
 Before implementing anything:
 
-1. Read `plan/HANDOFF.md`.
-2. Read `plan/STATE.md`.
-3. Read the relevant detailed plan file in `plan/guides/` for the active phase.
-4. Run:
+1. Read `AGENT.md`.
+2. Read `TASK.md` and `INFO.md`.
+3. Read `STATUS.md` and `PROJECT.md`.
+4. Read the relevant detailed plan file in `plan/project/` for the active phase.
+5. Read relevant files in `plan/status/` if you need recent progress, blockers, or decisions.
+6. Run:
 
 ```bash
 git status --short
 rg --files
 ```
 
-5. If repo state differs materially from `plan/STATE.md`, update `plan/STATE.md`.
+7. If repo state differs materially from `STATUS.md`, update `STATUS.md` and any related status files.
 
 ## During Work
 
 When a phase changes:
 
-- Update `plan/STATE.md` phase table.
+- Update `STATUS.md`.
 - Mark only real progress as `Done`.
 - Use `Blocked` if no meaningful progress can continue without user/external input.
 
@@ -41,16 +43,10 @@ When discovering a blocker or risk:
 
 Before final response to the user, always update:
 
-1. `plan/STATE.md`
-   - `Last updated`
-   - `Updated by`
-   - `Overall status`
-   - `Active phase`
-   - `Current objective`
-   - `Phase Status`
-   - `Next Action`
-   - `Last Completed Work`
-   - `Verification Log`
+1. `STATUS.md`
+   - project summary
+   - completed / pending work
+   - open issues if changed
 2. `plan/status/PROGRESS_LOG.md`
    - append a new dated entry
 3. `plan/status/BLOCKERS.md`
@@ -68,7 +64,7 @@ Allowed status values:
 - `Done`: completed and verified enough for that phase.
 - `Deferred`: intentionally postponed.
 
-Do not mark a phase `Done` only because some files were created. A phase is done when its acceptance criteria in `plan/guides/IMPLEMENTATION_BACKLOG.md` are satisfied.
+Do not mark a phase `Done` only because some files were created. A phase is done when its acceptance criteria in `plan/project/IMPLEMENTATION_BACKLOG.md` are satisfied.
 
 ## Progress Entry Rules
 
@@ -90,4 +86,4 @@ When finishing a work session, report to the user:
 - Verification commands run.
 - Next action.
 
-Do not claim implementation is complete unless `plan/STATE.md` and tests/verification support that claim.
+Do not claim implementation is complete unless `STATUS.md` and tests/verification support that claim.

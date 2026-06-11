@@ -177,3 +177,111 @@ Append a new entry at the top or bottom of this file at the end of every work se
 ### Next Recommended Action
 
 - If desired, mirror the same `--hf-dataset` option into the Kaggle notebook cells so the notebook no longer needs any local dataset export step.
+
+## 2026-06-11 - Codex Documentation Restructure Session
+
+### Summary
+
+- Re-read `TASK.md` and aligned the repository surface with the task addendum.
+- Added top-level human and agent entry points.
+- Renamed `plan/guides/` to `plan/project/` and updated the plan/state protocol accordingly.
+
+### Files Changed
+
+- `README.md`: rewritten as a short Vietnamese human entry point.
+- `AGENT.md`: added as the short English agent entry point.
+- `PROJECT.md`: added as the human-readable project overview and structure document.
+- `STATUS.md`: added as the human-readable project status document.
+- `plan/HANDOFF.md`: reframed as an internal plan-layer handoff.
+- `plan/STATE.md`: rewritten to reflect the new entry-point structure and current workspace.
+- `plan/status/AGENT_UPDATE_PROTOCOL.md`: updated agent read order and `plan/project/` path.
+- `plan/status/DECISIONS.md`: recorded the new structure decisions.
+- `plan/project/*`: updated root-doc references where needed.
+
+### Verification
+
+- `sed -n '1,260p' TASK.md`: confirmed the addendum requirements.
+- `mv plan/guides plan/project`: moved deeper project guidance to the requested folder name.
+- `ls -la plan plan/project plan/status`: confirmed the new layout.
+
+### Next Recommended Action
+
+- Sweep any remaining stale references so all plan docs consistently use `plan/project/` and the new top-level entry points.
+
+## 2026-06-11 - Codex Entry Point Simplification
+
+### Summary
+
+- Replaced the old `HANDOFF` and `STATE` entry-point model with `PROJECT.md` and `STATUS.md`.
+- Rewrote both documents in English and made them the primary public project and status surfaces.
+- Removed `plan/HANDOFF.md` and `plan/STATE.md` from the active repository contract.
+
+### Files Changed
+
+- `PROJECT.md`: rewritten as the detailed English project entry point.
+- `STATUS.md`: rewritten as the detailed English status entry point.
+- `AGENT.md`: updated agent read order and session discipline.
+- `plan/status/AGENT_UPDATE_PROTOCOL.md`: switched status ownership from `plan/STATE.md` to `STATUS.md`.
+- `plan/status/DECISIONS.md`: recorded the entry-point change.
+- `plan/HANDOFF.md`: removed.
+- `plan/STATE.md`: removed.
+
+### Verification
+
+- `rg -n "HANDOFF.md|STATE.md|plan/HANDOFF|plan/STATE|Project State|Handoff" .`: remaining mentions are historical inside decision/progress logs rather than active entry-point docs.
+- `ls -la README.md AGENT.md PROJECT.md STATUS.md plan plan/project plan/status`: confirmed the new top-level and plan layout.
+
+### Next Recommended Action
+
+- Keep `PROJECT.md` and `STATUS.md` updated whenever the implementation scope or verified status changes.
+
+## 2026-06-11 - Codex Link Privacy Cleanup
+
+### Summary
+
+- Removed machine-specific absolute paths from active documentation links.
+- Changed the reference sections in `PROJECT.md` and `STATUS.md` from simple link lists to `PURPOSE | WHERE` tables.
+
+### Files Changed
+
+- `README.md`: changed repo-surface links to relative paths.
+- `PROJECT.md`: changed the reference section to a two-column table with relative links.
+- `STATUS.md`: changed the reference section to a two-column table with relative links.
+- `docs/KAGGLE.md`: changed the notebook link to a relative path.
+
+### Verification
+
+- `rg -n "<local-absolute-link-patterns>" .`: used to find privacy-sensitive absolute-link patterns before cleanup.
+
+### Next Recommended Action
+
+- Keep future documentation links relative to the repository root unless a file truly requires another link style.
+
+## 2026-06-11 - Codex Docs Surface Cleanup
+
+### Summary
+
+- Removed `docs/` from the active repository contract.
+- Expanded `README.md` into a longer Vietnamese overview by pulling in material from `PROJECT.md` and `STATUS.md`.
+- Updated planning documents so they no longer require `docs/` as a deliverable.
+
+### Files Changed
+
+- `README.md`: expanded into a longer Vietnamese project overview and entry point.
+- `PROJECT.md`: removed `docs/` from the directory structure and added the notebook as a reference point.
+- `plan/project/ARCHITECTURE_PLAN.md`: removed `docs/` from the proposed repo structure.
+- `plan/project/DOCS_PLAN.md`: shifted documentation expectations toward top-level repo docs instead of `docs/`.
+- `plan/project/IMPLEMENTATION_BACKLOG.md`: removed `docs/` deliverables from the documentation phase.
+- `plan/project/TESTING_AND_ACCEPTANCE.md`: updated acceptance criteria to match the new doc surface.
+- `plan/project/PROJECT_REQUIREMENTS.md`: replaced generic additional docs expectation with `STATUS.md` and `plan/project/`.
+- `plan/status/DECISIONS.md`: recorded the `docs/` removal decision.
+- `docs/DATA.md`, `docs/EXPERIMENTS.md`, `docs/KAGGLE.md`, `docs/PROJECT.md`: removed.
+
+### Verification
+
+- `ls -la docs`: used to inspect the old docs surface before cleanup.
+- `rg -n "docs/|docs\\b|DATA.md|KAGGLE.md|EXPERIMENTS.md" plan/project AGENT.md PROJECT.md STATUS.md README.md`: used to find remaining active references before patching.
+
+### Next Recommended Action
+
+- Keep the public repo documentation concentrated in `README.md`, `PROJECT.md`, and `STATUS.md` unless a new explicit need appears.

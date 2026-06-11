@@ -12,11 +12,6 @@
 │       ├── xlmr_base.yaml
 │       ├── cafebert.yaml
 │       └── phobert_base.yaml
-├── docs/
-│   ├── PROJECT.md
-│   ├── DATA.md
-│   ├── EXPERIMENTS.md
-│   └── KAGGLE.md
 ├── notebooks/
 │   └── kaggle_wrapup.ipynb
 ├── scripts/
@@ -60,7 +55,10 @@
 │   ├── test_dataset.py
 │   ├── test_registry.py
 │   └── test_smoke_train.py
+├── AGENT.md
+├── PROJECT.md
 ├── README.md
+├── STATUS.md
 ├── pyproject.toml
 └── uv.lock
 ```
@@ -243,4 +241,3 @@ Bad boundary:
 - custom encoder wrappers everywhere before baseline works
 - hand-written training loop only to support hypothetical future architectures
 - MoE-specific assumptions inside dataset/tokenization code
-

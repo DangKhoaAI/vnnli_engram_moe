@@ -17,7 +17,7 @@ Use this file for technical or process decisions that future agents should not h
 ## DEC-001: Keep `plan/HANDOFF.md` As The Entry Point
 
 - Date: 2026-06-09
-- Status: Accepted
+- Status: Superseded
 - Context: Future sessions may start with only a request to read `HANDOFF.md`.
 - Decision: `plan/HANDOFF.md` remains the human/agent entry point. It should link to both stable plan files and mutable state files.
 - Consequences: Any new plan document should be linked from `HANDOFF.md` if it is required for pickup.
@@ -33,7 +33,7 @@ Use this file for technical or process decisions that future agents should not h
 ## DEC-005: Split Plan Guides And Mutable Status Files
 
 - Date: 2026-06-09
-- Status: Accepted
+- Status: Superseded
 - Context: The user requested fewer files at `plan/` root and asked to separate project guidance from status/state/progress/decision/report files.
 - Decision: Keep only `plan/HANDOFF.md` and `plan/STATE.md` at root. Move implementation guidance into `plan/guides/` and mutable status support files into `plan/status/`.
 - Consequences: Future links should use `plan/guides/...` for project instructions and `plan/status/...` for progress, decisions, blockers, and agent update protocol.
@@ -61,3 +61,35 @@ Use this file for technical or process decisions that future agents should not h
 - Context: The target runtime mentions Transformers 5.0.0, which may differ from the 4.x Trainer examples most snippets rely on.
 - Decision: Implement Design 1 training/evaluation with a small PyTorch loop and keep Hugging Face use focused on tokenizer/model loading.
 - Consequences: The baseline path is less sensitive to Trainer API drift, and offline smoke tests can monkeypatch the model/tokenizer more easily.
+
+## DEC-007: Add Top-Level Human And Agent Entry Points
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The task addendum says `README.md` is the human entry point and `AGENT.md` is the agent entry point, while `TASK.md` and `INFO.md` remain the highest-truth human-authored documents.
+- Decision: Introduce top-level `README.md`, `AGENT.md`, `PROJECT.md`, and `STATUS.md` as the stable surface of the repository. `AGENT.md` becomes the first file an agent should read.
+- Consequences: `plan/HANDOFF.md` remains useful, but now as an internal detailed handoff inside the `plan/` layer rather than the primary entry point.
+
+## DEC-008: Rename `plan/guides/` To `plan/project/`
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The task addendum explicitly says deeper project guidance should live under `plan/project/`.
+- Decision: Rename `plan/guides/` to `plan/project/` and update references.
+- Consequences: Future plan-level technical guidance should be created under `plan/project/`, while mutable work history continues to live under `plan/status/`.
+
+## DEC-009: Remove `plan/HANDOFF.md` And `plan/STATE.md`
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The user explicitly requested that `PROJECT.md` become the project entry point and `STATUS.md` become the status entry point, with no need for `HANDOFF.md` or `STATE.md`.
+- Decision: Remove `plan/HANDOFF.md` and `plan/STATE.md` from the repository contract and move active status ownership to `STATUS.md` plus the files under `plan/status/`.
+- Consequences: Future agents should start from `AGENT.md`, `PROJECT.md`, and `STATUS.md`, then use `plan/project/` and `plan/status/` for deeper context.
+
+## DEC-010: Remove `docs/` From The Repository Contract
+
+- Date: 2026-06-11
+- Status: Accepted
+- Context: The user explicitly requested that `docs/` be cleaned up and removed from active references because it is no longer needed.
+- Decision: Remove the `docs/` directory from the repository surface and stop using it in active documentation references. Consolidate public repository documentation into `README.md`, `PROJECT.md`, and `STATUS.md`.
+- Consequences: Future documentation should either live in the top-level repo entry-point files or in `plan/project/` when it is implementation-planning context rather than user-facing repo documentation.

@@ -110,6 +110,6 @@ Required final deliverables:
 - Kaggle wrapup notebook.
 - Tests.
 - README.
-- `docs/PROJECT.md`.
-- Additional docs if useful.
-
+- `PROJECT.md`.
+- `STATUS.md`.
+- Additional planning notes under `plan/project/` if useful.

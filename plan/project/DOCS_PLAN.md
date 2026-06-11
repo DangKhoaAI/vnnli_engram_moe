@@ -34,9 +34,9 @@ uv run python scripts/train.py \
   --test-file data/ViANLI/test.jsonl
 ```
 
-## `docs/PROJECT.md`
+## `PROJECT.md`
 
-This file is explicitly required by the user. It should include:
+This file is explicitly required by the user at the repo root. It should include:
 
 - Project overview.
 - Architecture and tech stack.
@@ -46,36 +46,23 @@ This file is explicitly required by the user. It should include:
 - Future MoE/Engram+MoE architecture notes.
 - Output artifacts.
 
-## `docs/DATA.md`
+## `STATUS.md`
 
 Include:
 
-- ViANLI sizes.
-- Required columns.
-- Accepted file formats.
-- Label mapping.
-- Example rows.
-- PhoBERT segmentation note.
+- current project summary
+- completed vs pending work
+- open issues and risks
+- verification snapshot
+- reference table for deeper agent-facing status files
 
-## `docs/KAGGLE.md`
+## Optional Supporting Docs
 
-Include:
+If more repository-facing documentation becomes useful later, prefer either:
 
-- How to upload/use `notebooks/kaggle_wrapup.ipynb`.
-- How to set `DATA_DIR`.
-- How to switch model.
-- Where outputs are written.
-- Common Kaggle troubleshooting.
-
-## `docs/EXPERIMENTS.md`
-
-Include:
-
-- Baseline experiment matrix.
-- Default hyperparameters.
-- How to create new experiment config.
-- How to compare metrics.
-- Expected output directory structure.
+- expanding `PROJECT.md`
+- expanding `STATUS.md`
+- or placing deeper agent-oriented guidance under `plan/project/`
 
 ## Documentation Acceptance
 
@@ -87,4 +74,3 @@ Docs are acceptable when a new agent can answer:
 - Which files should I edit to tune hyperparameters?
 - How do I run on Kaggle?
 - How will MoE/Engram+MoE fit later?
-

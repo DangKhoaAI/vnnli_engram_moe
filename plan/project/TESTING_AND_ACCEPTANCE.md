@@ -102,7 +102,7 @@ The project is complete enough for the original request when:
 - Config files centralize all hyperparameters.
 - At least one smoke training path passes locally.
 - Kaggle notebook exists and is valid.
-- README and docs exist.
+- README, `PROJECT.md`, and `STATUS.md` exist.
 - Future MoE/Engram+MoE extension points are present and documented.
 - Final model outputs include metrics and resolved config.
 
@@ -121,4 +121,3 @@ An implementing agent should finish with:
 - test commands run and results
 - any commands not run and why
 - remaining future work limited to Design 2/3 research unless explicitly implemented
-

@@ -10,7 +10,7 @@ Tasks:
 
 - Run `git status --short`.
 - Run `rg --files`.
-- Confirm `TASK.md`, `INFO.md`, and `Finetuning.ipynb` are preserved.
+- Confirm `TASK.md` and `INFO.md` remain untouched, and align top-level entry points with the current repo state.
 - Create a branch if the user asks for Git workflow; otherwise continue locally.
 
 Acceptance:
@@ -166,16 +166,15 @@ Goal: make the project understandable to a future reader.
 Tasks:
 
 - Add top-level `README.md`.
-- Add `docs/PROJECT.md`.
-- Add `docs/DATA.md`.
-- Add `docs/KAGGLE.md`.
-- Add `docs/EXPERIMENTS.md`.
+- Add `PROJECT.md`.
+- Add `STATUS.md`.
+- Keep `AGENT.md` aligned with the repository entry-point contract.
 
 Acceptance:
 
 - README includes quickstart, training command, data format.
-- `docs/PROJECT.md` includes overview, architecture, tech stack, directory structure, module/function list.
-- Kaggle doc matches notebook commands.
+- `PROJECT.md` includes overview, architecture, tech stack, directory structure, module/function list.
+- `STATUS.md` clearly describes completed work, remaining work, and deeper status references.
 
 ## Phase 8: Verification
 
@@ -204,4 +203,3 @@ Acceptance:
 - Smoke train produces output directory and metrics.
 - Docs and notebook exist.
 - Final response reports what was implemented and what remains future work.
-
