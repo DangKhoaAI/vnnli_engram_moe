@@ -1,8 +1,8 @@
 # VNNLI Engram MoE
 
 Repository này cung cấp một codebase fine-tuning cho bài toán Vietnamese Natural Language Inference (NLI).
-Scope hiện tại tập trung vào Design 1: transformer encoder + classification head cho bài toán phân loại cặp câu.
-Codebase đã được tổ chức sẵn để sau này có thể thêm `moe` và `engram_moe` mà không cần refactor lớn.
+Scope hiện tại gồm Design 1: transformer encoder + classification head, và nhánh ViDeBERTa + MoE cho bài toán phân loại cặp câu.
+Codebase vẫn giữ sẵn đường mở rộng để sau này thêm `engram_moe` mà không cần refactor lớn.
 
 ## Bài toán
 Model nhận vào một cặp câu:
@@ -16,15 +16,17 @@ Và dự đoán một trong 3 nhãn:
 
 ## Trạng thái hiện tại
 - Baseline Design 1 đã được implement
+- ViDeBERTa keys và config đã được thêm
+- MoE head cho ViDeBERTa/DeBERTa-style encoder đã được implement
 - CLI train / evaluate / predict đã có
 - Config đã được centralize
 - Offline-first test suite đã có
 - Notebook Kaggle đã có và đã bám flow mounted source/data/model input hiện tại
-- `moe` và `engram_moe` mới đang ở mức extension point
+- `engram_moe` vẫn đang ở mức extension point
 
 Tóm tắt tiến độ:
 - Hoàn thành `8/8` bước cho baseline scope
-- Chưa hoàn thành phần MoE
+- Đã có nhánh ViDeBERTa + MoE để train thử nghiệm
 - Chưa hoàn thành phần Engram + MoE
 
 ## Stack kỹ thuật
@@ -37,7 +39,7 @@ Tóm tắt tiến độ:
 - Kaggle notebook cho flow setup / train tren mounted Kaggle inputs
 
 ## Model và data scope
-Model chính hiện tại: `bert-base-multilingual-cased`, `xlm-roberta-base`, `uitnlp/CafeBERT`, `vinai/phobert-base`.
+Model chính hiện tại: `bert-base-multilingual-cased`, `xlm-roberta-base`, `uitnlp/CafeBERT`, `Fsoft-AIC/videberta-base`, `vinai/phobert-base`.
 Schema đầu vào mong đợi:
 - `uid`
 - `premise`
@@ -91,6 +93,18 @@ uv run python scripts/train.py \
   --test-file path/to/test.jsonl
 ```
 
+Train ViDeBERTa + MoE bằng local files hoặc Kaggle-mounted checkpoint:
+```bash
+uv run python scripts/train.py \
+  --config configs/default.yaml \
+  --model-config configs/models/videberta_base_moe.yaml \
+  --checkpoint /path/to/videberta-base \
+  --local-files-only \
+  --train-file path/to/train.jsonl \
+  --validation-file path/to/validation.jsonl \
+  --test-file path/to/test.jsonl
+```
+
 Evaluate:
 ```bash
 uv run python scripts/evaluate.py --run-dir outputs/runs/<run_name> --split test
@@ -109,6 +123,7 @@ uv run python scripts/predict.py \
 - `src/vnnli_engram_moe/data/`: đọc data, map label, preprocess, tokenize pair
 - `src/vnnli_engram_moe/models/registry.py`: chọn checkpoint và architecture builder
 - `src/vnnli_engram_moe/models/ffn.py`: baseline hiện tại
+- `src/vnnli_engram_moe/models/moe.py`: ViDeBERTa/DeBERTa-style MoE FFN replacement
 - `src/vnnli_engram_moe/training/trainer.py`: orchestration cho train / eval / predict
 - `scripts/train.py`, `scripts/evaluate.py`, `scripts/predict.py`: CLI surface của repo
 
@@ -121,11 +136,11 @@ Mỗi run được ghi vào `outputs/runs/`, thường gồm resolved config, me
 - dataset pipeline
 - CLI train / evaluate / predict
 - Kaggle notebook
+- ViDeBERTa + MoE config và training path
 - test suite cơ bản
 - project/status surface cho human và agent
 
 Chưa xong:
-- `moe`
 - `engram_moe`
 - quyết định cuối cùng về local artifact như `data.py`, `src.zip`, `vianli_kaggle/`, `vianli_kaggle.zip`
 

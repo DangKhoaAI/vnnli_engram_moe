@@ -117,3 +117,11 @@ Use this file for technical or process decisions that future agents should not h
 - Context: The latest human task says Kaggle internet access cannot be used to download models from the Hugging Face Hub, and `INFO.md` now provides a mounted local mBERT directory under `/kaggle/input/models/...`.
 - Decision: Extend the train CLI so `--checkpoint` can explicitly point at a mounted model directory and add `--local-files-only` so tokenizer/config/model loading can be forced to stay local. Refresh the Kaggle notebook to auto-detect a local Transformers directory and pass that path through the train command.
 - Consequences: Offline Kaggle runs become a first-class supported path instead of relying on raw `--override` strings, but the mounted model directory now has to preserve a standard local Transformers file layout.
+
+## DEC-014: Implement ViDeBERTa MoE By Replacing Final DeBERTa-Style FFN Blocks
+
+- Date: 2026-06-25
+- Status: Accepted
+- Context: The latest task asks for ViDeBERTa support and an MoE architecture that replaces only the last 2-4 FFN blocks, uses top-k routing with 4 experts, initializes experts from dense FFN weights when possible, and supports a router/expert-first training phase.
+- Decision: Keep the Hugging Face sequence-classification wrapper, locate DeBERTa-style encoder layers, replace the configured final FFN blocks with routed experts initialized from each layer's original `intermediate.dense` and `output.dense`, add a load-balancing auxiliary loss, and implement router/expert warmup freezing in the custom trainer.
+- Consequences: The MoE path is now trainable for ViDeBERTa/DeBERTa-style models without changing the data pipeline or CLI surface. Saved MoE checkpoints include a project marker file and are saved with PyTorch weights so the builder can reconstruct the architecture before loading weights.

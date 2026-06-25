@@ -11,6 +11,8 @@
 │       ├── mbert_cased.yaml
 │       ├── xlmr_base.yaml
 │       ├── cafebert.yaml
+│       ├── videberta_base.yaml
+│       ├── videberta_base_moe.yaml
 │       └── phobert_base.yaml
 ├── notebooks/
 │   └── kaggle_wrapup.ipynb
@@ -126,7 +128,7 @@ PhoBERT detail:
 Maps architecture keys to builders:
 
 - `ffn`: implemented now.
-- `moe`: placeholder/future.
+- `moe`: implemented for ViDeBERTa/DeBERTa-style encoder layers.
 - `engram_moe`: placeholder/future.
 
 Also maps model keys to Hugging Face checkpoints.
@@ -151,13 +153,16 @@ If `classifier_dropout` is not accepted by a model config, set dropout on the lo
 
 ### `models/moe.py`
 
-Future placeholder.
+Implements the ViDeBERTa/DeBERTa-style MoE path.
 
-Include:
+Current behavior:
 
-- config dataclass or builder params
-- explicit `NotImplementedError`
-- docstring describing intended router/expert behavior
+- Finds DeBERTa-style encoder layers at paths such as `model.deberta.encoder.layer`.
+- Replaces only the last `moe.replace_last_n_layers` FFN blocks.
+- Uses `moe.num_experts` experts and top-k routing with `moe.top_k`.
+- Initializes every expert from the original dense FFN input/output weights when the layer exposes `intermediate.dense` and `output.dense`.
+- Adds a load-balancing auxiliary loss through the model wrapper.
+- Saves a project marker file so saved MoE checkpoints can be reconstructed before loading weights.
 
 ### `models/engram_moe.py`
 
@@ -234,7 +239,7 @@ Good boundary:
 
 - shared config schema includes future namespaces
 - registry has future keys
-- future modules exist with clear errors
+- `engram_moe` keeps a clear future-work error
 
 Bad boundary:
 

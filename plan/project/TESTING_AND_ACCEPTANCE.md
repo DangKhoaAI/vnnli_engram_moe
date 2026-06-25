@@ -47,8 +47,19 @@ Cover:
 
 - known model keys resolve to checkpoints
 - `ffn` architecture exists
-- `moe` and `engram_moe` placeholders exist
+- `moe` architecture exists
+- `engram_moe` placeholder exists
 - unknown model/architecture raises clear error
+
+### `tests/test_moe.py`
+
+Cover:
+
+- only the configured final FFN layers are replaced
+- early encoder layers remain dense
+- expert weights are initialized from the original dense FFN weights
+- routed MoE output preserves hidden-state shape
+- warmup-freeze parameter filtering keeps router/expert/classifier trainable
 
 ### `tests/test_smoke_train.py`
 
@@ -104,6 +115,7 @@ The project is complete enough for the original request when:
 - Kaggle notebook exists and is valid.
 - README, `PROJECT.md`, and `STATUS.md` exist.
 - Future MoE/Engram+MoE extension points are present and documented.
+- ViDeBERTa + MoE replacement path is unit-tested.
 - Final model outputs include metrics and resolved config.
 
 ## Known Risks
@@ -120,4 +132,4 @@ An implementing agent should finish with:
 - summary of files changed
 - test commands run and results
 - any commands not run and why
-- remaining future work limited to Design 2/3 research unless explicitly implemented
+- remaining future work limited to Engram+MoE research unless explicitly implemented

@@ -77,9 +77,13 @@ class MoeConfig:
     enabled: bool = False
     num_experts: int = 4
     top_k: int = 2
+    replace_last_n_layers: int = 2
     expert_hidden_size: int | None = None
     router_temperature: float = 1.0
     load_balance_loss_weight: float = 0.01
+    router_expert_warmup_steps: int = 0
+    router_expert_learning_rate: float | None = None
+    backbone_learning_rate: float | None = None
 
 
 @dataclass(slots=True)

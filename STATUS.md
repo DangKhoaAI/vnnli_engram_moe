@@ -8,10 +8,10 @@ This document is the main status entry point for the repository. It is meant to 
 
 ## 1. Current Summary
 
-- Project stage: baseline implementation completed
-- Active implemented design: Design 1 FFN-style transformer baseline
-- Future designs: `moe`, `engram_moe`
-- Verification level: baseline code path, tests, and smoke training were completed in a prior implementation session, and the Kaggle notebook plus train CLI have now been refreshed for the current mounted source/data/model Kaggle layout with per-code-cell markdown, local-checkpoint loading, and default Kaggle environment usage
+- Project stage: baseline implementation completed; ViDeBERTa MoE implementation added
+- Active implemented designs: Design 1 FFN-style transformer baseline; ViDeBERTa MoE FFN replacement path
+- Future designs: `engram_moe`
+- Verification level: baseline code path, MoE replacement unit tests, full pytest suite, and notebook JSON validation are passing locally; the Kaggle notebook now defaults to ViDeBERTa + MoE with mounted source/data/model discovery
 
 ## 2. Progress Snapshot
 
@@ -20,7 +20,7 @@ The current baseline scope is tracked as 8 major steps.
 - Completed: `8/8`
 - In progress: `0/8`
 - Blocked: `0/8`
-- Deferred future work: `2` architecture tracks (`moe`, `engram_moe`)
+- Deferred future work: `1` architecture track (`engram_moe`)
 
 ## 3. Step-by-Step Status
 
@@ -32,6 +32,7 @@ The current baseline scope is tracked as 8 major steps.
 6. Kaggle wrapup notebook: complete
 7. Documentation and agent context preservation: complete
 8. Baseline verification: complete
+9. ViDeBERTa model keys/configs and MoE path: implemented and locally unit-tested
 
 ## 4. What Is Working
 
@@ -44,12 +45,15 @@ The current baseline scope is tracked as 8 major steps.
 - evaluation CLI
 - prediction CLI
 - local-checkpoint training via `--checkpoint` and `--local-files-only`
+- ViDeBERTa model keys for xsmall/base/large
+- ViDeBERTa base MoE config at `configs/models/videberta_base_moe.yaml`
+- DeBERTa-style MoE FFN replacement for the last configurable encoder blocks
+- MoE router/expert warmup freeze before full-model training
 - offline-first pytest suite
 - Kaggle notebook flow for mounted source/data/model inputs and the default Kaggle Python environment
 
 ## 5. What Is Not Finished Yet
 
-- `moe` is still only an extension point
 - `engram_moe` is still only an extension point
 - alternate Kaggle mount names may still require editing the top configuration cell in the notebook, even though the current notebook now auto-detects the known mounted source/data/model layout
 
@@ -61,7 +65,7 @@ These are not regressions in the baseline; they are simply outside the currently
 - The Kaggle runtime still needs the mounted Transformer checkpoint directory to contain a standard local `transformers` layout (`config.json`, weights, tokenizer files); otherwise the notebook will stop early with a clear path-resolution error.
 - The refreshed Kaggle notebook now depends more directly on Kaggle's default runtime image, so a future package-version change in that image could require revisiting the notebook.
 - Manual Kaggle shell debugging must either run from `/kaggle/working/vnnli_engram_moe` or use absolute paths for both `scripts/train.py` and config files; the notebook now uses absolute paths for those values.
-- Future MoE work will need its own implementation and verification plan, even though the current structure already reserves the integration points.
+- Full Kaggle verification for ViDeBERTa + MoE still depends on a mounted ViDeBERTa checkpoint directory being available in the Kaggle input.
 
 ## 7. Verification Snapshot
 
@@ -75,6 +79,7 @@ The baseline was previously verified through:
 - notebook structure refresh so every code cell has a markdown explanation above it
 - notebook path hardening so training uses absolute script/config paths, prints subprocess failure output, and smoke-loads the mounted local model before training
 - pytest coverage for local model loading and local-files-only config propagation
+- pytest coverage for ViDeBERTa/DeBERTa-style MoE replacement, top-k routing shape, expert initialization, and warmup-freeze parameter filtering
 - CUDA smoke training with a tiny checkpoint
 - Hugging Face dataset smoke training against the ViANLI dataset path used by the repo
 
@@ -82,8 +87,8 @@ This means the project is past the planning-only stage and already has a validat
 
 ## 8. Recommended Next Actions
 
-- Upload the refreshed notebook to Kaggle and run one end-to-end mBERT training pass against the mounted ViANLI dataset plus the mounted local mBERT checkpoint in the default Kaggle runtime with internet disabled.
-- If future research continues, implement `moe` first because the project already reserves a clean registry path for it.
+- Upload the refreshed notebook to Kaggle and run one end-to-end ViDeBERTa + MoE training pass against the mounted ViANLI dataset plus a mounted local ViDeBERTa checkpoint in the default Kaggle runtime with internet disabled.
+- If future research continues, implement `engram_moe` next on top of the current MoE path.
 - Keep `PROJECT.md` and this `STATUS.md` aligned whenever the repository surface or implementation scope changes.
 
 ## 9. Reference Points

@@ -25,6 +25,35 @@ Append a new entry at the top or bottom of this file at the end of every work se
 - Next step for the next agent
 ```
 
+## 2026-06-25 - Codex ViDeBERTa MoE Implementation
+
+### Summary
+
+- What changed: implemented ViDeBERTa/DeBERTa-style MoE training support by replacing configurable final FFN blocks with top-k routed experts initialized from the original dense FFN weights when possible.
+- Why: `TASK.md` now asks for ViDeBERTa logic plus an MoE architecture with router/expert-first training before full-model training.
+
+### Files Changed
+
+- `src/vnnli_engram_moe/models/moe.py`: replaced the future-work placeholder with routed MoE FFN replacement, wrapper loss handling, and saved-checkpoint reconstruction marker support.
+- `src/vnnli_engram_moe/training/trainer.py`: added MoE router/expert warmup freezing and MoE-aware optimizer parameter groups.
+- `src/vnnli_engram_moe/config.py`, `configs/default.yaml`: added MoE replacement and warmup hyperparameters.
+- `src/vnnli_engram_moe/models/registry.py`, `configs/models/videberta_*.yaml`: added ViDeBERTa xsmall/base/large keys and the default `videberta_base_moe` config.
+- `notebooks/kaggle_wrapup.ipynb`: changed the default Kaggle run to ViDeBERTa + MoE and added model path hint scoring for ViDeBERTa mounts.
+- `tests/test_moe.py`, `tests/test_registry.py`: added MoE replacement, routing, expert initialization, warmup-filter, and ViDeBERTa registry coverage.
+- `README.md`, `PROJECT.md`, `STATUS.md`, `AGENT.md`, `plan/project/*`, `plan/status/*`: aligned public and agent docs with the new MoE implementation state.
+
+### Verification
+
+- `.venv/bin/python -m pytest`: passed; `22 passed`.
+- `.venv/bin/python -m json.tool notebooks/kaggle_wrapup.ipynb`: passed.
+- `.venv/bin/python -c "... compile notebook code cells ..."`: passed; `compiled 5`.
+- `.venv/bin/python scripts/train.py --config configs/default.yaml --model-config configs/models/mbert_cased.yaml --checkpoint hf-internal-testing/tiny-random-bert --train-file tests/fixtures/sample_vianli.jsonl --validation-file tests/fixtures/sample_vianli.jsonl --test-file tests/fixtures/sample_vianli.jsonl --epochs 1 --max-steps 1 --batch-size 2 --run-name smoke_after_videberta_moe --device cpu`: passed.
+- `.venv/bin/python -c "... DebertaV2Config local random-init MoE forward ..."`: passed; output wrapper logits shape `(2, 3)`.
+
+### Next Recommended Action
+
+- Mount a local ViDeBERTa checkpoint on Kaggle and run the refreshed notebook end to end with internet disabled.
+
 ## 2026-06-09 - Codex Planning Session
 
 ### Summary

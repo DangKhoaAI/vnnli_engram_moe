@@ -4,7 +4,7 @@ This document is the main project entry point for understanding what this reposi
 
 ## 1. Overview
 
-This repository provides a fine-tuning codebase for Vietnamese Natural Language Inference (NLI). The current implementation focuses on a practical baseline for sentence-pair classification using pretrained transformer encoders, while keeping the project structure ready for future Mixture-of-Experts research without forcing a large refactor later.
+This repository provides a fine-tuning codebase for Vietnamese Natural Language Inference (NLI). The current implementation includes a practical baseline for sentence-pair classification using pretrained transformer encoders and a ViDeBERTa MoE path that replaces selected final DeBERTa-style FFN blocks with routed experts.
 
 The task is to predict one of three labels for a `(premise, hypothesis)` pair:
 
@@ -24,6 +24,7 @@ If any derived documentation disagrees with those two files, `TASK.md` and `INFO
 ### Implemented now
 
 - Design 1 baseline: transformer encoder plus classification head for 3-way NLI
+- ViDeBERTa MoE: configurable replacement of the last DeBERTa-style FFN blocks with top-k routed experts
 - Centralized YAML configuration
 - CLI entry points for training, evaluation, and prediction
 - Offline-first tests
@@ -31,10 +32,9 @@ If any derived documentation disagrees with those two files, `TASK.md` and `INFO
 
 ### Reserved for future work
 
-- Design 2: `moe`
 - Design 3: `engram_moe`
 
-These future architectures are represented in the codebase as extension points, but they are not yet implemented as full training-ready models.
+The Engram architecture is still represented as an extension point, but it is not yet implemented as a full training-ready model.
 
 ## 3. Architecture And Tech Stack
 
@@ -62,6 +62,9 @@ The repository is designed around the model families named in the task context:
 - `bert-base-multilingual-cased`
 - `xlm-roberta-base`
 - `uitnlp/CafeBERT`
+- `Fsoft-AIC/videberta-xsmall`
+- `Fsoft-AIC/videberta-base`
+- `Fsoft-AIC/videberta-large`
 - `vinai/phobert-base`
 
 The configuration system also makes it straightforward to add heavier or alternative variants later, but the current documented baseline centers on the core set above.
@@ -131,7 +134,7 @@ plan/status/    progress log, decisions, blockers, and agent workflow notes
 - `src/vnnli_engram_moe/models/ffn.py`
   Implements the current Design 1 baseline path.
 - `src/vnnli_engram_moe/models/moe.py`
-  Placeholder module for future MoE implementation.
+  Implements ViDeBERTa/DeBERTa-style FFN replacement with top-k routed MoE experts.
 - `src/vnnli_engram_moe/models/engram_moe.py`
   Placeholder module for future Engram + MoE implementation.
 
@@ -193,6 +196,19 @@ uv run python scripts/train.py \
   --local-files-only \
   --train-file path/to/train.jsonl \
   --validation-file path/to/dev.jsonl \
+  --test-file path/to/test.jsonl
+```
+
+Typical ViDeBERTa + MoE flow with a local mounted checkpoint:
+
+```bash
+uv run python scripts/train.py \
+  --config configs/default.yaml \
+  --model-config configs/models/videberta_base_moe.yaml \
+  --checkpoint /kaggle/input/.../videberta-base \
+  --local-files-only \
+  --train-file path/to/train.jsonl \
+  --validation-file path/to/validation.jsonl \
   --test-file path/to/test.jsonl
 ```
 

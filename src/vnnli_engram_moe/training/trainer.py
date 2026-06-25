@@ -80,6 +80,56 @@ def _build_dataloader(
     )
 
 
+def _is_moe_warmup_trainable(name: str) -> bool:
+    trainable_fragments = (
+        ".router.",
+        ".experts.",
+        ".classifier.",
+        "classifier.",
+        ".pooler.",
+        "pooler.",
+    )
+    return any(fragment in name or name.startswith(fragment.lstrip(".")) for fragment in trainable_fragments)
+
+
+def _set_moe_warmup_freeze(model: torch.nn.Module, *, freeze_backbone: bool) -> None:
+    for name, parameter in model.named_parameters():
+        parameter.requires_grad = (not freeze_backbone) or _is_moe_warmup_trainable(name)
+
+
+def _build_optimizer(model: torch.nn.Module, config: AppConfig) -> torch.optim.Optimizer:
+    if config.model.architecture != "moe":
+        return torch.optim.AdamW(
+            model.parameters(),
+            lr=config.training.learning_rate,
+            eps=config.training.adam_epsilon,
+            weight_decay=config.training.weight_decay,
+        )
+
+    router_expert_lr = config.moe.router_expert_learning_rate or config.training.learning_rate
+    backbone_lr = config.moe.backbone_learning_rate or config.training.learning_rate
+    router_expert_parameters: list[torch.nn.Parameter] = []
+    backbone_parameters: list[torch.nn.Parameter] = []
+    for name, parameter in model.named_parameters():
+        if _is_moe_warmup_trainable(name):
+            router_expert_parameters.append(parameter)
+        else:
+            backbone_parameters.append(parameter)
+
+    parameter_groups = []
+    if backbone_parameters:
+        parameter_groups.append({"params": backbone_parameters, "lr": backbone_lr})
+    if router_expert_parameters:
+        parameter_groups.append({"params": router_expert_parameters, "lr": router_expert_lr})
+
+    return torch.optim.AdamW(
+        parameter_groups,
+        lr=config.training.learning_rate,
+        eps=config.training.adam_epsilon,
+        weight_decay=config.training.weight_decay,
+    )
+
+
 def evaluate_model(model, dataloader: DataLoader, device: torch.device) -> dict[str, float]:
     model.eval()
     predictions: list[int] = []
@@ -197,12 +247,14 @@ def train(
     LOGGER.info("Using device: %s", device)
     model.to(device)
 
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=config.training.learning_rate,
-        eps=config.training.adam_epsilon,
-        weight_decay=config.training.weight_decay,
+    moe_warmup_steps = (
+        config.moe.router_expert_warmup_steps if config.model.architecture == "moe" else 0
     )
+    if moe_warmup_steps > 0:
+        LOGGER.info("Freezing backbone for the first %s MoE warmup steps.", moe_warmup_steps)
+        _set_moe_warmup_freeze(model, freeze_backbone=True)
+
+    optimizer = _build_optimizer(model, config)
 
     global_step = 0
     train_loss_total = 0.0
@@ -232,6 +284,10 @@ def train(
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
                 global_step += 1
+                if moe_warmup_steps > 0 and global_step >= moe_warmup_steps:
+                    LOGGER.info("MoE warmup complete at step %s; unfreezing full model.", global_step)
+                    _set_moe_warmup_freeze(model, freeze_backbone=False)
+                    moe_warmup_steps = 0
 
                 if global_step % config.training.logging_steps == 0 or global_step == 1:
                     progress.set_postfix(step=global_step, loss=f"{loss.item():.4f}")

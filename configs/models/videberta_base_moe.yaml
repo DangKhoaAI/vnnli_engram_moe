@@ -1,0 +1,15 @@
+model:
+  model_key: videberta_base
+  checkpoint: Fsoft-AIC/videberta-base
+  architecture: moe
+  use_fast_tokenizer: true
+  requires_word_segmentation: false
+
+moe:
+  enabled: true
+  num_experts: 4
+  top_k: 2
+  replace_last_n_layers: 2
+  router_temperature: 1.0
+  load_balance_loss_weight: 0.01
+  router_expert_warmup_steps: 400

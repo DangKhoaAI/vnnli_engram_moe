@@ -19,10 +19,9 @@ The current human-provided Kaggle paths in `INFO.md` are:
 ```text
 /kaggle/input/datasets/khoa05ai/fu-s7dat-tuningmodel/vnnli_engram_moe-main
 /kaggle/input/datasets/khoa05ai/fu-s7dat-vieanli/vianli_kaggle
-/kaggle/input/models/khoa05ai/fpt-s7dat-model-mbert/transformers/default/1/mbert
 ```
 
-The notebook should still keep these as editable hints, not hard requirements.
+The previously used mBERT model mount may still be used for FFN runs, but the current notebook default is ViDeBERTa + MoE. Keep `MODEL_SOURCE_HINT` editable because `INFO.md` does not currently provide a concrete ViDeBERTa Kaggle model mount path.
 
 ## Notebook Location
 
@@ -55,14 +54,15 @@ Recommended cells:
 ```python
 REPO_SOURCE_HINT = "/kaggle/input/datasets/khoa05ai/fu-s7dat-tuningmodel/vnnli_engram_moe-main"
 DATASET_DIR_HINT = "/kaggle/input/datasets/khoa05ai/fu-s7dat-vieanli/vianli_kaggle"
-MODEL_SOURCE_HINT = "/kaggle/input/models/khoa05ai/fpt-s7dat-model-mbert/transformers/default/1/mbert"
+MODEL_SOURCE_HINT = ""
+MODEL_KEY_HINTS = ["videberta", "deberta", "fsoft"]
 REPO_DIR = "/kaggle/working/vnnli_engram_moe"
 OUTPUT_ROOT = "/kaggle/working/outputs/runs"
 
-MODEL_CONFIG = "configs/models/mbert_cased.yaml"
+MODEL_CONFIG = "configs/models/videberta_base_moe.yaml"
 BASE_CONFIG = "configs/default.yaml"
 USER_CONFIG = "configs/kaggle.yaml"
-RUN_NAME = "kaggle_mbert_vianli"
+RUN_NAME = "kaggle_videberta_moe_vianli"
 
 RUN_PYTEST = False
 USE_FP16 = True
@@ -80,14 +80,14 @@ python scripts/train.py --help
 /usr/bin/python3 /kaggle/working/vnnli_engram_moe/scripts/train.py \
   --config /kaggle/working/vnnli_engram_moe/configs/default.yaml \
   --user-config /kaggle/working/vnnli_engram_moe/configs/kaggle.yaml \
-  --model-config /kaggle/working/vnnli_engram_moe/configs/models/mbert_cased.yaml \
-  --checkpoint /kaggle/input/.../mbert \
+  --model-config /kaggle/working/vnnli_engram_moe/configs/models/videberta_base_moe.yaml \
+  --checkpoint /kaggle/input/.../videberta-base \
   --local-files-only \
   --train-file /kaggle/input/.../train.jsonl \
   --validation-file /kaggle/input/.../validation.csv \
   --test-file /kaggle/input/.../test.jsonl \
   --output-dir /kaggle/working/outputs/runs \
-  --run-name kaggle_mbert_vianli
+  --run-name kaggle_videberta_moe_vianli
 ```
 
 ## Kaggle Config Differences
@@ -131,6 +131,7 @@ Support this mounted-model pattern:
 - tokenizer files such as `tokenizer.json`, `tokenizer_config.json`, `vocab.txt`, or `tokenizer.model`
 
 If no such model directory is found, notebook should print `/kaggle/input/models` and `/kaggle/input` to help the user adjust `MODEL_SOURCE_HINT`.
+The current notebook sorts discovered model directories by `MODEL_KEY_HINTS` so ViDeBERTa paths are preferred when several mounted model directories exist.
 
 ## Output Contract
 
@@ -159,8 +160,8 @@ Notebook is acceptable when:
 - All user-adjustable values are in one top cell.
 - Every code cell has a markdown explanation directly above it.
 - It can run mounted-source setup without manual shell editing.
-- It can run default `mBERT + FFN` training against the mounted ViANLI data described in `INFO.md`.
-- It can run default `mBERT + FFN` training against the mounted local mBERT directory described in `INFO.md`.
+- It can run default `ViDeBERTa + MoE` training against the mounted ViANLI data described in `INFO.md`.
+- It can run default `ViDeBERTa + MoE` training against a mounted local ViDeBERTa directory; if the mount name is unusual, editing `MODEL_SOURCE_HINT` in the first code cell should be enough.
 - It uses Kaggle's default Python environment instead of creating a new virtual environment.
 - It uses absolute paths for `scripts/train.py` and config files so manual notebook cwd differences do not break training.
 - It passes the mounted model directory through the train CLI without relying on Hugging Face Hub downloads.

@@ -104,13 +104,14 @@ Tasks:
 - Implement `ffn` builder using `AutoConfig`, `AutoTokenizer`, and `AutoModelForSequenceClassification`.
 - Ensure `num_labels=3`, `id2label`, `label2id`.
 - Apply dropout config where model supports it.
-- Add placeholders for `moe` and `engram_moe`.
+- Add ViDeBERTa/DeBERTa-style `moe` implementation and keep `engram_moe` as an explicit future-work path.
 
 Acceptance:
 
 - `tests/test_registry.py` validates known model keys.
 - `architecture=ffn` resolves to a buildable path.
-- `architecture=moe` and `architecture=engram_moe` fail explicitly with future-work errors.
+- `architecture=moe` resolves to a trainable ViDeBERTa/DeBERTa-style MoE path.
+- `architecture=engram_moe` fails explicitly with a future-work error.
 
 ## Phase 5: Training And Evaluation
 

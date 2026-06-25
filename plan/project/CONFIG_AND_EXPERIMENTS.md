@@ -55,9 +55,13 @@ moe:
   enabled: false
   num_experts: 4
   top_k: 2
+  replace_last_n_layers: 2
   expert_hidden_size: null
   router_temperature: 1.0
   load_balance_loss_weight: 0.01
+  router_expert_warmup_steps: 0
+  router_expert_learning_rate: null
+  backbone_learning_rate: null
 
 engram:
   enabled: false
@@ -127,6 +131,8 @@ Minimum baseline experiments:
 | `mbert_cased_ffn` | `bert-base-multilingual-cased` | `default.yaml` + `mbert_cased.yaml` | primary multilingual baseline |
 | `xlmr_base_ffn` | `xlm-roberta-base` | `default.yaml` + `xlmr_base.yaml` | multilingual RoBERTa baseline |
 | `cafebert_ffn` | `uitnlp/CafeBERT` | `default.yaml` + `cafebert.yaml` | Vietnamese-focused multilingual model |
+| `videberta_base_ffn` | `Fsoft-AIC/videberta-base` | `default.yaml` + `videberta_base.yaml` | Vietnamese DeBERTa baseline |
+| `videberta_base_moe` | `Fsoft-AIC/videberta-base` | `default.yaml` + `videberta_base_moe.yaml` | ViDeBERTa with routed MoE FFN replacement |
 | `phobert_base_ffn` | `vinai/phobert-base` | `default.yaml` + `phobert_base.yaml` | requires word segmentation |
 
 Optional heavier experiments:
@@ -173,4 +179,3 @@ configs/experiments/
 ```
 
 Each experiment config should include only overrides and inherit from `default.yaml` in the loader or via command composition.
-

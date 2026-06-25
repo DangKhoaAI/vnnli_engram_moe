@@ -38,8 +38,9 @@ This is the short entry point for future agents working in this repository.
 ## Current Scope
 
 - Implemented baseline: Design 1 FFN-style fine-tuning path.
-- Reserved for future research: `moe`, `engram_moe`.
-- Kaggle setup/train flow is part of the repository contract, and the notebook now prefers mounted Kaggle source/data/model inputs over live Git clone or Hugging Face Hub downloads.
+- Implemented research path: ViDeBERTa with MoE replacement for the last configurable DeBERTa-style FFN blocks.
+- Reserved for future research: `engram_moe`.
+- Kaggle setup/train flow is part of the repository contract, and the notebook now prefers mounted Kaggle source/data/model inputs over live Git clone or Hugging Face Hub downloads. The current notebook default is ViDeBERTa + MoE and it prefers model directories whose path contains `videberta`, `deberta`, or `fsoft`.
 
 ## Session Discipline
 
