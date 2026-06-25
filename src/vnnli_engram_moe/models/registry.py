@@ -15,6 +15,9 @@ MODEL_CHECKPOINTS = {
     "xlmr_base": "xlm-roberta-base",
     "xlmr_large": "xlm-roberta-large",
     "cafebert": "uitnlp/CafeBERT",
+    "videberta_xsmall": "Fsoft-AIC/videberta-xsmall",
+    "videberta_base": "Fsoft-AIC/videberta-base",
+    "videberta_large": "Fsoft-AIC/videberta-large",
     "phobert_base": "vinai/phobert-base",
     "phobert_large": "vinai/phobert-large",
     "phobert_base_v2": "vinai/phobert-base-v2",
@@ -53,4 +56,3 @@ def build_model(config: AppConfig, *, checkpoint: str | None = None, pretrained:
     builder = get_builder(config.model.architecture)
     resolved_checkpoint = checkpoint or resolve_checkpoint(config)
     return builder(config, checkpoint=resolved_checkpoint, pretrained=pretrained)
-
